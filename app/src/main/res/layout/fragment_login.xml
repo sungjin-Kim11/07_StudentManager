@@ -33,6 +33,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:digits="@string/password_disgits"
                 android:inputType="text|textPassword"
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
