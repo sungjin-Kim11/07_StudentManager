@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.google.android.material.transition.MaterialSharedAxis
 import com.lion.a07_studentmanager.fragment.LoginFragment
+import com.lion.a07_studentmanager.fragment.MainFragment
 import com.lion.a07_studentmanager.fragment.SettingPasswordFragment
 import kotlin.concurrent.thread
 
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        replaceFragment(FragmentName.SETTING_PASSWORD_FRAGMENT, false, false, null)
+        replaceFragment(FragmentName.LOGIN_FRAGMENT, false, false, null)
     }
 
 
@@ -45,6 +46,8 @@ class MainActivity : AppCompatActivity() {
             FragmentName.LOGIN_FRAGMENT -> LoginFragment()
             // 관리자 비밀번호 설정 화면
             FragmentName.SETTING_PASSWORD_FRAGMENT -> SettingPasswordFragment()
+            // 메인 화면
+            FragmentName.MAIN_FRAGMENT -> MainFragment()
         }
 
         // bundle 객체가 null이 아니라면
@@ -107,4 +110,6 @@ enum class FragmentName(var number:Int, var str:String){
     LOGIN_FRAGMENT(1, "LoginFragment"),
     // 관리자 비밀번호 설정화면
     SETTING_PASSWORD_FRAGMENT(2, "SettingPasswordFragment"),
+    // 메인 화면
+    MAIN_FRAGMENT(3, "MainFragment"),
 }
