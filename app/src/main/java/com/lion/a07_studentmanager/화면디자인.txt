@@ -1,0 +1,32 @@
+[res/layout/activity_main.xml]
+
+ConstraintLayout
+
+    FragmentContainerView
+        - id : fragmentContainerViewMain
+        - layout_width : 0dp
+        - layout_height : 0dp
+        - View와 좌측을 부모의 좌측으로
+        - View의 우측을 부모의 우측으로
+        - View의 상단을 부모의 상단으로
+        - View의 하단을 보무의 하단으로
+
+LinearLayout
+    - orientation : vertical
+    - padding : 10dp
+
+    TextInputLayout
+        - id : textFieldLoginPassword
+        - hint : 관리자 비밀번호
+        - startIconDrawable : lock_24px
+        - endIconMode : password_toggle
+        - layout_height : wrap_content
+
+        TextInputEditText
+            - hint : 삭제
+            - inputType : text|text_password
+            - singleLine : true
+
+    Button
+        - id : buttonLoginSubmit
+        - text : 로그인
