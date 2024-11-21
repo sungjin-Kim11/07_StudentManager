@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.lion.a07_studentmanager.FragmentName
 import com.lion.a07_studentmanager.MainActivity
 import com.lion.a07_studentmanager.R
 import com.lion.a07_studentmanager.databinding.FragmentLoginBinding
@@ -51,12 +52,8 @@ class LoginFragment : Fragment() {
     fun settingButtonLoginSubmit(){
         fragmentLoginBinding.apply {
             buttonLoginSubmit.setOnClickListener {
-
-                // 비밀번호를 잘못 입력했을 때
-                // textFieldLoginPassword.error = "비밀번호를 잘못 입력하였습니다"
-
-                // 비밀번호를 제대로 입력했을 때
-                mainActivity.hideSoftInput()
+                // MainFragment로 이동한다.
+                mainActivity.replaceFragment(FragmentName.MAIN_FRAGMENT, false, true, null)
             }
         }
     }
