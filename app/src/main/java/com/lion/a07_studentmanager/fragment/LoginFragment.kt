@@ -9,6 +9,7 @@ import com.lion.a07_studentmanager.MainActivity
 import com.lion.a07_studentmanager.R
 import com.lion.a07_studentmanager.databinding.FragmentLoginBinding
 
+
 class LoginFragment : Fragment() {
 
     lateinit var fragmentLoginBinding: FragmentLoginBinding
@@ -24,6 +25,7 @@ class LoginFragment : Fragment() {
         settingButtonLoginSubmit()
         // 기타 뷰를 설정하는 메서드를 호출한다.
         settingInitView()
+
 
 
         return fragmentLoginBinding.root

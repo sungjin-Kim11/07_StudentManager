@@ -8,14 +8,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.lion.a07_studentmanager.databinding.ActivityMainBinding
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.google.android.material.transition.MaterialSharedAxis
-import com.lion.a07_studentmanager.databinding.ActivityMainBinding
 import com.lion.a07_studentmanager.fragment.LoginFragment
 import com.lion.a07_studentmanager.fragment.SettingPasswordFragment
 import kotlin.concurrent.thread
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,8 +33,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        replaceFragment(FragmentName.LOGIN_FRAGMENT, false, false, null)
+        replaceFragment(FragmentName.SETTING_PASSWORD_FRAGMENT, false, false, null)
     }
+
 
     // 프래그먼트를 교체하는 함수
     fun replaceFragment(fragmentName: FragmentName, isAddToBackStack:Boolean, animate:Boolean, dataBundle: Bundle?){

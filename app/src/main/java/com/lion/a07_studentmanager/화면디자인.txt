@@ -11,22 +11,33 @@ ConstraintLayout
         - View의 상단을 부모의 상단으로
         - View의 하단을 보무의 하단으로
 
+[res/layout/fragment_login.xml]
+
 LinearLayout
     - orientation : vertical
-    - padding : 10dp
 
-    TextInputLayout
-        - id : textFieldLoginPassword
-        - hint : 관리자 비밀번호
-        - startIconDrawable : lock_24px
-        - endIconMode : password_toggle
-        - layout_height : wrap_content
+    MaterialToolbar
+        - id : toolbarLogin
+        - background : transparent
 
-        TextInputEditText
-            - hint : 삭제
-            - inputType : text|text_password
-            - singleLine : true
+    LinearLaoyout
+        - orientation : vertical
+        - padding : 10dp
 
-    Button
-        - id : buttonLoginSubmit
-        - text : 로그인
+        TextInputLayout
+            - id : textFieldLoginPassword
+            - hint : 관리자 비밀번호
+            - startIconDrawable : lock_24px
+            - endIconMode : password_toggle
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - inputType : text|textPassword
+                - singleLine : true
+
+        Button
+            - id : buttonLoginSubmit
+            - text : 로그인
+            - layout_marginTop : 10dp
