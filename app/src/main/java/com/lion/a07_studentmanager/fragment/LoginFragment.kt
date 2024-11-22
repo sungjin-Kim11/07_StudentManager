@@ -31,10 +31,10 @@ class LoginFragment : Fragment() {
 
         return fragmentLoginBinding.root
     }
-
+    
     // 툴바를 설정하는 메서드
     fun settingToolbarLogin(){
-        fragmentLoginBinding.apply {
+        fragmentLoginBinding.apply { 
             // 타이틀
             toolbarLogin.title = "관리자 로그인"
         }

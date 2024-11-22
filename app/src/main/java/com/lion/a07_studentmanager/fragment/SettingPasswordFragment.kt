@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lion.a07_studentmanager.FragmentName
 import com.lion.a07_studentmanager.MainActivity
-import com.lion.a07_studentmanager.R
 import com.lion.a07_studentmanager.databinding.FragmentSettingPasswordBinding
 
 class SettingPasswordFragment : Fragment() {
@@ -34,7 +33,7 @@ class SettingPasswordFragment : Fragment() {
 
     // 툴바 설정 메서드
     fun settingToolbar(){
-        fragmentSettingPasswordBinding.apply {
+        fragmentSettingPasswordBinding.apply { 
             // 타이틀
             toolbarSettingPassword.title = "관리자 비밀번호 등록"
         }

@@ -15,6 +15,7 @@ ConstraintLayout
 
 LinearLayout
     - orientation : vertical
+    - transitionGroup : true
 
     MaterialToolbar
         - id : toolbarLogin
@@ -41,3 +42,122 @@ LinearLayout
             - id : buttonLoginSubmit
             - text : 로그인
             - layout_marginTop : 10dp
+
+[res/layout/fragment_setting_password.xml]
+
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id : toolbarSettingPassword
+        - background : transparent
+
+    LinearLayout
+        - orientation : vertical
+        - padding : 10dp
+
+        TextInputLayout
+            - id : textFieldSettingPassword1
+            - hint : 관리자 비밀번호
+            - startIconDrawable : lock_24px
+            - endIconMode : password_toggle
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - inputType : text|textPassword
+                - singleLine : true
+
+        TextInputLayout
+            - id : textFieldSettingPassword2
+            - hint : 관리자 비밀번호 확인
+            - startIconDrawable : lock_24px
+            - endIconMode : password_toggle
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - inputType : text|textPassword
+                - singleLine : true
+
+        Button
+            - id : buttonSettingPasswordSubmit
+            - text : 등록완료
+            - layout_marginTop : 10dp
+
+[res/layout/navigation_view_header_main.xml]
+
+LinearLayout
+    - orientation : vertical
+    - padding : 10dp
+    - layout_height : wrap_content
+    - transitionGroup : true
+
+    TextView
+        - text : 환영합니다.
+        - textAppearance : Large
+
+    TextView
+        - text : 관리자님.
+        - layout_marginTop : 10dp
+
+[res/layout/fragment_main.xml]
+
+DrawerLayout
+    - id : drawerLayoutMain
+    - transitionGroup : true
+
+    CoordinatorLayout
+        - layout_width : match_parent
+        - layout_height : match_parent
+
+        FragmentContainerView
+            - id : fragmentContainerViewNavigation
+            - layout_width : match_parent
+            - layout_height : match_parent
+
+    NavigationView
+        - id : navigationViewMain
+        - layout_gravity : start
+
+[res/layout/fragment_student_list.xml]
+
+ConstraintLayout
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id : toolbarStudentList
+        - background : transparent
+        - 상단을 부모의 상단
+        - 좌측을 부모의 좌측
+        - 우측을 부모의 우측
+
+    FAB
+        - id : fabStudentList
+        - icon : add_24px
+        - 우측을 부모의 우축
+        - layout_marginEnd : 10dp
+        - 하단을 부모의 하단
+        - layout_marginBottom : 10dp
+
+    RecyclerView
+        - id : recyclerViewStudentList
+        - 좌측을 부모의 좌측
+        - 우측을 부모의 우측
+        - 하단을 부모의 하단
+        - 상단을 toolbarStudentList 의 하단
+
+[res/layout/row_text1.xml]
+
+LinearLayout
+    - orientation : vertical
+    - padding : 10dp
+    - transitionGroup : true
+    - layout_height : wrap_content
+
+    TextView
+        - id : textViewRow
+        - textAppearance : Large

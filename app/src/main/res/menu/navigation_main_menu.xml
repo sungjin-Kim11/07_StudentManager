@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="학생관리" >
+        <menu >
+            <item
+                android:id="@+id/navigation_main_menu_student_list"
+                android:checkable="true"
+                android:icon="@drawable/list_alt_24px"
+                android:title="학생목록"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_main_menu_student_point"
+                android:checkable="true"
+                android:icon="@drawable/point_of_sale_24px"
+                android:title="학생성적"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_main_menu_student_data"
+                android:checkable="true"
+                android:icon="@drawable/manufacturing_24px"
+                android:title="학생통계"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+    <item android:title="관리자" >
+        <menu >
+            <item
+                android:id="@+id/navigation_main_menu_calendar"
+                android:checkable="true"
+                android:icon="@drawable/calendar_month_24px"
+                android:title="학사일정"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/navigation_main_menu_setting_manager"
+                android:checkable="true"
+                android:icon="@drawable/settings_input_svideo_24px"
+                android:title="관리자설정"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+</menu>

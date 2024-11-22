@@ -1,0 +1,66 @@
+[res/menu/navigation_main_menu.xml]
+
+menu
+
+    menuItem
+        - title : 학생관리
+
+        menu
+
+            menuItem
+                - id : navigation_main_menu_student_list
+                - icon : list_alt_24px
+                - title : 학생목록
+                - showAsAction : ifRoom
+                - checkable : true
+
+            menuItem
+                - id : navigation_main_menu_student_point
+                - icon : point_of_sale_24px
+                - title : 학생성적
+                - showAsAction : ifRoom
+                - checkable : true
+
+            menuItem
+                - id : navigation_main_menu_student_data
+                - icon : manufacturing_24px
+                - title : 학생통계
+                - showAsAction : ifRoom
+                - checkable : true
+
+    menuItem
+        title : 관리자
+
+        menu
+
+            menuItem
+                - id : navigation_main_menu_calendar
+                - icon : calendar_month_24px
+                - title : 학사일정
+                - showAsAction : ifRoom
+                - checkable : true
+
+            menuItem
+                - id : navigation_main_menu_setting_manager
+                - icon : settings_input_svideo_24px
+                - title : 관리자설정
+                - showAsAction : ifRoom
+                - checkable : true
+
+[res/menu/toolbar_student_list_menu.xml]
+
+Menu
+
+    menuItem
+        - id : student_list_menu_filter
+        - icon : filter_alt_24px
+        - title : 필터
+        - showAsAction : always
+
+    menuItem
+        - id : student_list_menu_search
+        - icon : search_24px
+        - title : 검색
+        - showAsAction : always
+
+
