@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.lion.a07_studentmanager.MainActivity
 import com.lion.a07_studentmanager.R
+import com.lion.a07_studentmanager.databinding.DialogStudentListFilterBinding
 import com.lion.a07_studentmanager.databinding.FragmentStudentListBinding
 import com.lion.a07_studentmanager.databinding.RowText1Binding
 
@@ -44,8 +46,15 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
             toolbarStudentList.inflateMenu(R.menu.toolbar_student_list_menu)
             toolbarStudentList.setOnMenuItemClickListener {
                 when(it.itemId){
-                    R.id.student_list_menu_filter ->{}
-                    R.id.student_list_menu_search -> {}
+                    R.id.student_list_menu_filter ->{
+                        // 필터 다이얼로그를 띄우는 메서드를 호출한다.
+                        showFilterDialog()
+                    }
+                    R.id.student_list_menu_search -> {
+                        // 검색화면으로 이동한다.
+                        mainFragment.replaceFragment(SubFragmentName.SEARCH_STUDENT_FRAGMENT,
+                            true, true, null)
+                    }
                 }
                 true
             }
@@ -59,6 +68,19 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
             recyclerViewStudentList.layoutManager = LinearLayoutManager(mainActivity)
             val deco = MaterialDividerItemDecoration(mainActivity, MaterialDividerItemDecoration.VERTICAL)
             recyclerViewStudentList.addItemDecoration(deco)
+        }
+    }
+
+    // 필터 다이얼로그를 띄우는 메서드
+    fun showFilterDialog(){
+        fragmentStudentListBinding.apply {
+            val builder = MaterialAlertDialogBuilder(mainActivity)
+            builder.setTitle("검색 필터 설정")
+            val dialogStudentListFilterBinding = DialogStudentListFilterBinding.inflate(layoutInflater)
+            builder.setView(dialogStudentListFilterBinding.root)
+            builder.setPositiveButton("설정완료", null)
+            builder.setNegativeButton("취소", null)
+            builder.show()
         }
     }
 

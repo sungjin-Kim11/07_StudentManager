@@ -1017,3 +1017,927 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
         // RecyclerView를 구성하는 메서드를 호출한다.
         settingRecyclerViewStudentList()
 ```
+
+### 학년과 운동부 메뉴 구성을 위한 문자열을 구성해준다.
+
+[res/values/strings.xml]
+
+```xml
+    <!-- 학년 -->
+    <array name="studentGrade">
+        <item>전체</item>
+        <item>1학년</item>
+        <item>2학년</item>
+        <item>3학년</item>
+    </array>
+
+    <!-- 운동부 -->
+    <array name="studentType">
+        <item>전체</item>
+        <item>농구부</item>
+        <item>축구부</item>
+        <item>야구부</item>
+    </array>
+```
+
+
+### 필터 아이콘을 누르면 나타나는 다이얼로그를 구성하기 위한 레이아웃을 만든다.
+
+[res/layout/dialog_student_list.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:transitionGroup="true">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="학년"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textFieldStudentListGrade"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:text="전체"
+            app:simpleItems="@array/studentGrade" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="운동부"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textFieldStudentListType"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:text="전체"
+            app:simpleItems="@array/studentType" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="성별"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleStudentListGender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:checkedButton="@id/buttonGenderAll"
+        app:selectionRequired="true"
+        app:singleSelection="true"
+        tools:singleSelection="true">
+
+        <Button
+            android:id="@+id/buttonGenderAll"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="전체" />
+
+        <Button
+            android:id="@+id/buttonGenderMale"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="남자" />
+
+        <Button
+            android:id="@+id/buttonGenderFemale"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="여자" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+</LinearLayout>
+```
+
+### 다이얼로그를 띄우는 메서드를 구현한다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // 필터 다이얼로그를 띄우는 메서드
+    fun showFilterDialog(){
+        fragmentStudentListBinding.apply {
+            val builder = MaterialAlertDialogBuilder(mainActivity)
+            builder.setTitle("검색 필터 설정")
+            val dialogStudentListFilterBinding = DialogStudentListFilterBinding.inflate(layoutInflater)
+            builder.setView(dialogStudentListFilterBinding.root)
+            builder.setPositiveButton("설정완료", null)
+            builder.setNegativeButton("취소", null)
+            builder.show()
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentListFragment.kt - settingToolbarStudentList()]
+```kt
+                    R.id.student_list_menu_filter ->{
+                        // 필터 다이얼로그를 띄우는 메서드를 호출한다.
+                        showFilterDialog()
+                    }
+```
+
+---
+
+# 학생 검색 화면
+
+### 프로그먼트를 만들어준다.
+
+[fragment/SearchStudentFragment.kt]
+
+```kt
+class SearchStudentFragment(val mainFragment: MainFragment) : Fragment() {
+
+    lateinit var fragmentSearchStudentBinding: FragmentSearchStudentBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentSearchStudentBinding = FragmentSearchStudentBinding.inflate(inflater)
+        mainActivity = activity as MainActivity
+        return fragmentSearchStudentBinding.root
+    }
+
+}
+```
+
+### 프래그먼트의 이름을 정의해준다.
+
+[fragment/MainFragment.kt - SubFragmentName]
+```kt
+    // 학생 검색 화면
+    SEARCH_STUDENT_FRAGMENT(2, "SearchStudentFragment"),
+```
+
+### 프래그먼트 객체를 생성한다.
+
+[fragment/MainFragment.kt - replaceFragment()]
+```kt
+            // 학정 정보 검색 화면
+            SubFragmentName.SEARCH_STUDENT_FRAGMENT -> SearchStudentFragment(this)
+```
+
+### 메뉴를 누르면 검색 화면이 보이도록 한다.
+
+[fragment/StudentListFragment.kt - settingToolbarStudentList()]
+```kt
+                    R.id.student_list_menu_search -> {
+                        // 검색화면으로 이동한다.
+                        mainFragment.replaceFragment(SubFragmentName.SEARCH_STUDENT_FRAGMENT, true, true, null)
+                    }
+```
+
+### 아이콘 파일을 drawable 폴더에 넣어준다.
+- search_24px.xml
+- arrow_back_24px.xml
+
+### SearchStudentFragment의 화면을 구성한다.
+
+[res/layout/fragment_search_student.xml]
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="true"
+    tools:context=".fragment.SearchStudentFragment" >
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarSearchStudent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textFieldSearchStudentName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="검색어"
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@drawable/search_24px">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="hint" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSearchStudent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
+```
+
+### 툴바를 구성하는 메서드를 구현한다.
+
+[fragment/SearchStudentFragment.kt]
+```kt
+
+    // 툴바를 구성하는 메서드
+    fun settingToolbarSearchStudent(){
+        fragmentSearchStudentBinding.apply {
+            toolbarSearchStudent.title = "학생 정보 검색"
+
+            toolbarSearchStudent.setNavigationIcon(R.drawable.arrow_back_24px)
+            toolbarSearchStudent.setNavigationOnClickListener {
+                mainFragment.removeFragment(SubFragmentName.SEARCH_STUDENT_FRAGMENT)
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/SearchStudentFragment.kt - onCreateView()]
+
+```kt
+        // 툴바를 구성하는 메서드를 호출한다.
+        settingToolbarSearchStudent()
+```
+
+### 리사이클러 뷰 구성을 위한 임시 데이터
+
+[fragment/SearchStudentFragment.kt]
+```kt
+    // 리사이클러 뷰 구성을 위한 임시 데이터
+    val tempData = Array(100){
+        "학생 ${it + 1}"
+    }
+```
+
+### 어뎁터 클래스를 작성한다.
+
+[fragemnt/SearchStudentFragment.kt]
+```kt
+    // Recyclerview의 어뎁터
+    inner class RecyclerViewStudentSearchAdapter : RecyclerView.Adapter<RecyclerViewStudentSearchAdapter.ViewHolderStudentSearch>(){
+        inner class ViewHolderStudentSearch(val rowText1Binding: RowText1Binding) : RecyclerView.ViewHolder(rowText1Binding.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderStudentSearch {
+            val rowText1Binding = RowText1Binding.inflate(layoutInflater, parent, false)
+            val viewHolderStudentSearch = ViewHolderStudentSearch(rowText1Binding)
+            return viewHolderStudentSearch
+        }
+
+        override fun getItemCount(): Int {
+            return tempData.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolderStudentSearch, position: Int) {
+            holder.rowText1Binding.textViewRow.text = tempData[position]
+        }
+    }
+```
+
+### RecyclerView를 구성하는 메서드를 만들어준다.
+
+[fragemnt/SearchStudentFragment.kt]
+```kt
+    // recyclerView를 구성하는 메서드
+    fun settingRecyclerViewSearchStudent(){
+        fragmentSearchStudentBinding.apply {
+            recyclerViewSearchStudent.adapter = RecyclerViewStudentSearchAdapter()
+            recyclerViewSearchStudent.layoutManager = LinearLayoutManager(mainActivity)
+            val deco = MaterialDividerItemDecoration(mainActivity, MaterialDividerItemDecoration.VERTICAL)
+            recyclerViewSearchStudent.addItemDecoration(deco)
+        }
+    }
+```
+
+### 메서드를 호출해준다.
+
+[fragemnt/SearchStudentFragment.kt - onCreateView()]
+```kt
+        // recyclerView를 구성하는 메서드
+        settingRecyclerViewSearchStudent()
+```
+
+
+---
+
+# 학생 정보를 보는 화면
+
+### Fragment 생성
+
+[fragment/ShowStudentFragment.kt]
+
+```kt
+class ShowStudentFragment(val mainFragment: MainFragment) : Fragment() {
+
+    lateinit var fragmentShowStudentBinding: FragmentShowStudentBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentShowStudentBinding = FragmentShowStudentBinding.inflate(inflater)
+        mainActivity = activity as MainActivity
+        
+        return fragmentShowStudentBinding.root
+    }
+}
+```
+
+### Fragment 이름을 설정한다.
+
+[fragment/MainFragment.kt - SubFragmentName]
+```kt
+    // 학생 정보 보는 화면
+    SHOW_STUDENT_FRAGMENT(3, "ShowStudentFragment"),
+```
+
+### Fragment 객체를 생성한다.
+
+[fragment/MainFragment.kt - replaceFragment()]
+
+```kt
+            // 학생 정보 보는 화면
+            SubFragmentName.SHOW_STUDENT_FRAGMENT -> ShowStudentFragment(this)
+```
+
+### RecyclerView의 항목을 누르면 ShowStudentFragment가 보여지게 한다.
+
+[fragment/SearchStudentFragment - RecyclerViewStudentSearchAdapter]
+```kt
+        inner class ViewHolderStudentSearch(val rowText1Binding: RowText1Binding) : RecyclerView.ViewHolder(rowText1Binding.root), OnClickListener{
+            override fun onClick(v: View?) {
+                // 학생 정보를 보는 화면으로 이동한다.
+                mainFragment.replaceFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT, true, true, null)
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderStudentSearch {
+            val rowText1Binding = RowText1Binding.inflate(layoutInflater, parent, false)
+            val viewHolderStudentSearch = ViewHolderStudentSearch(rowText1Binding)
+            rowText1Binding.root.setOnClickListener(viewHolderStudentSearch)
+            return viewHolderStudentSearch
+        }
+```
+
+### ShowStudentFragment의 화면을 구성해준다.
+
+[res/layout/fragment_show_student.xml]
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="true"
+    tools:context=".fragment.ShowStudentFragment" >
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarShowStudent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldShowStudentName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="이름"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:singleLine="true"
+                android:text=" "
+                android:textColor="#000000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldShowStudentGrade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="학년"
+            app:startIconDrawable="@drawable/delete_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:singleLine="true"
+                android:text=" "
+                android:textColor="#000000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldShowStudentType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="운동부"
+            app:startIconDrawable="@drawable/delete_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:singleLine="true"
+                android:text=" "
+                android:textColor="#000000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldShowStudentGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="성별"
+            app:startIconDrawable="@drawable/filter_alt_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:singleLine="true"
+                android:text=" "
+                android:textColor="#000000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldShowStudentKorean"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="국어점수"
+            app:startIconDrawable="@drawable/filter_alt_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:singleLine="true"
+                android:text=" "
+                android:textColor="#000000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldShowStudentEnglish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="영어점수"
+            app:startIconDrawable="@drawable/point_of_sale_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:singleLine="true"
+                android:text=" "
+                android:textColor="#000000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldShowStudentMath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="수학점수"
+            app:startIconDrawable="@drawable/delete_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:singleLine="true"
+                android:text=" "
+                android:textColor="#000000" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    </LinearLayout>
+</LinearLayout>
+```
+
+### 툴바에 배치할 메뉴를 구성해준다.
+
+[res/menu/toolbar_show_student_menu.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/show_student_menu_modify"
+        android:icon="@drawable/edit_24px"
+        android:title="수정"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/show_student_menu_remove"
+        android:icon="@drawable/delete_24px"
+        android:title="삭제"
+        app:showAsAction="always" />
+</menu>
+```
+
+### 툴바를 구성하는 메서드를 만들어준다.
+
+[fragment/ShowStudentFragment.kt]
+```kt
+
+    // 툴바를 구성하는 메서드
+    fun settingToolbarShowStudent(){
+        fragmentShowStudentBinding.apply {
+            toolbarShowStudent.title = "학생 정보 보기"
+
+            toolbarShowStudent.setNavigationIcon(R.drawable.arrow_back_24px)
+            toolbarShowStudent.setNavigationOnClickListener {
+                mainFragment.removeFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT)
+            }
+
+            toolbarShowStudent.inflateMenu(R.menu.toolbar_show_student_menu)
+            toolbarShowStudent.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.show_student_menu_modify -> {}
+                    R.id.show_student_menu_remove -> {}
+                }
+                true
+            }
+        }
+    }
+```
+
+### 메서드를 호출해준다.
+
+[fragment/ShowStudentFragment.kt - onCreateView()]
+```kt
+        // 툴바를 구성하는 메서드
+        settingToolbarShowStudent()
+```
+
+### 삭제 메뉴를 누르면 이전으로 돌아가게 한다.
+
+[fragment/ShowStudentFragment.kt - settingToolbarShowStudent()]
+```kt
+                    R.id.show_student_menu_remove -> {
+                        mainFragment.removeFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT)
+                    }
+```
+
+--- 
+
+# 학생 정보 수정 화면
+
+### 프래그먼트를 만들어준다.
+
+[fragment/ModifyStudentFragment.kt]
+
+```kt
+class ModifyStudentFragment(val mainFragment: MainFragment) : Fragment() {
+
+    lateinit var fragmentModifyStudentBinding: FragmentModifyStudentBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentModifyStudentBinding = FragmentModifyStudentBinding.inflate(inflater)
+        mainActivity = activity as MainActivity
+
+        return fragmentModifyStudentBinding.root
+    }
+}
+```
+
+### 프래그먼트의 이름을 정의한다
+
+[layout/MainFragment.kt - SubFragmentName]
+```kt
+    // 학생 정보 수정 화면
+    MODIFY_STUDENT_FRAGMENT(4, "ModifyStudentFragment"),
+```
+
+### 프래그먼트 객체를 생성한다.
+
+[layout/MainFragment.kt - replaceFragment()]
+
+```kt
+            // 학생 정보 수정 화면
+            SubFragmentName.MODIFY_STUDENT_FRAGMENT ->  ModifyStudentFragment(this)
+```
+
+### ShowStudentFragment의 메뉴를 누르면 정보 수정 화면으로 이동하게 한다.
+
+[fragment/ShowStudentFragment.kt - settingToolbarShowStudent()]
+```kt
+                    R.id.show_student_menu_modify -> {
+                        // 정보 수정 화면으로 이동한다.
+                        mainFragment.replaceFragment(SubFragmentName.MODIFY_STUDENT_FRAGMENT,
+                            true, true, null)
+                    }
+```
+
+
+### ShowStudentFragment의 화면을 구성해준다.
+
+[res/layout/fragment_modify_student.xml]
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="true"
+    tools:context=".fragment.ModifyStudentFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarModifyStudent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldModifyStudentName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="이름"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="학년" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleModifyStudentGrade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:checkedButton="@id/buttonGradeOne"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/buttonGradeOne"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1학년" />
+
+            <Button
+                android:id="@+id/buttonGradeTow"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2학년" />
+
+            <Button
+                android:id="@+id/buttonGradeThree"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="3학년" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="운동부" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleModifyStudentType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:checkedButton="@id/buttonTypeBasketBall"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/buttonTypeBasketBall"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="농구부" />
+
+            <Button
+                android:id="@+id/buttonTypeSoccer"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="축구부" />
+
+            <Button
+                android:id="@+id/buttonTypeBaseBall"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="야구부" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="성별" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleModifyStudentGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:checkedButton="@id/buttonGenderMale"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/buttonGenderMale"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="남자" />
+
+            <Button
+                android:id="@+id/buttonGenderFemale"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="여자" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldModifyStudentKorean"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="국어점수"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldModifyStudentEnglish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="영어점수"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldModifyStudentMath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="수학점수"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/buttonModifyStudentSubmit"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="수정 완료" />
+
+    </LinearLayout>
+
+</LinearLayout>
+```
+
+### 툴바를 구성하는 메서드를 만들어준다.
+
+[fragment/ModifyStudentFragment.kt]
+```kt
+    // 툴바를 구성하는 메서드
+    fun settingToolbarModifyStudent(){
+        fragmentModifyStudentBinding.apply {
+            toolbarModifyStudent.title = "학생 정보 수정"
+            toolbarModifyStudent.setNavigationIcon(R.drawable.arrow_back_24px)
+            toolbarModifyStudent.setNavigationOnClickListener {
+                mainFragment.removeFragment(SubFragmentName.MODIFY_STUDENT_FRAGMENT)
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/ModifyStudentFragment.kt - onCreateView()]
+```kt
+        // 툴바를 구성하는 메서드 호출
+        settingToolbarModifyStudent()
+```

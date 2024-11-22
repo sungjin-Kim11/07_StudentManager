@@ -161,3 +161,372 @@ LinearLayout
     TextView
         - id : textViewRow
         - textAppearance : Large
+
+[res/layout/dialog_student_list_filter.xml]
+
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+    - padding : 20dp
+
+    TextView
+        - text : 학년
+        - textAppearance : Large
+
+    TextInputLayout
+        - layout_height : wrap_content
+        - layout_marginTop : 10dp
+        - id : textFieldStudentListGrade
+        - style : @style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu
+
+        AutoCompleteTextView
+            - layout_width : match_parent
+            - inputType : none
+            - simpleItems : @array/studentGrade
+            - text : 전체
+
+    MaterialDivider
+        - layout_marginTop : 10dp
+
+    TextView
+        - text : 운동부
+        - layout_marginTop : 10dp
+
+    TextInputLayout
+        - layout_height : wrap_content
+        - layout_marginTop : 10dp
+        - id : textFieldStudentListType
+        - style : @style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu
+
+        AutoCompleteTextView
+            - layout_width : match_parent
+            - inputType : none
+            - simpleItems : @array/studentType
+            - text : 전체
+
+    MaterialDivider
+        - layout_marginTop : 10dp
+
+    TextView
+        - text : 성별
+        - layout_marginTop : 10dp
+
+    MaterialButtonToggleGroup
+        - id : toggleStudentListGender
+        - singleSelection : true
+        - checkedButton : buttonGenderAll
+        - selectionRequired : true
+        - layout_marginTop : 10dp
+
+        Button
+            - id : buttonGenderAll
+            - text : 전체
+            - layout_width : match_parent
+            - layout_weight : 1
+            - style : OutlinedButton
+
+        Button
+            - id : buttonGenderMale
+            - text : 남자
+            - layout_width : match_parent
+            - layout_weight : 1
+            - style : OutlinedButton
+
+        Button
+            - id : buttonGenderFemale
+            - text : 여자
+            - layout_width : match_parent
+            - layout_weight : 1
+            - style : OutlinedButton
+
+[res/layout/fragment_search_student.xml]
+
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id : toolbarSearchStudent
+        - background : transparent
+
+    TextInputLayout
+        - id : textFieldSearchStudentName
+        - startIconDrawable : search_24px
+        - endIconMode : clear_text
+        - hint : 검색어
+        - layout_height : wrap_content
+        - layout_margin : 10dp
+
+        TextInputEditText
+            - hint : 삭제
+            - singleLine : true
+            - imeOptions : actionSearach
+
+    RecyclerView
+        - id : recyclerViewSearchStudent
+
+[res/layout/fragment_show_student.xml]
+
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id toolbarShowStudent
+        - background : transparent
+
+    LinearLayout
+        - orientation : vertical
+        - padding : 10dp
+
+        TextInputLayout
+            - id : textFieldShowStudentName
+            - startIconDrawable : 아무거나
+            - hint : 이름
+            - layout_height : wrap_content
+
+            TextInputEditText
+                - hint : 삭제
+                - text : " "
+                - enabled : false
+                - textColor : #000000
+                - singleLine : true
+
+        TextInputLayout
+            - id : textFieldShowStudentGrade
+            - startIconDrawable : 아무거나
+            - hint : 학년
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - text : " "
+                - enabled : false
+                - textColor : #000000
+                - singleLine : true
+
+
+        TextInputLayout
+            - id : textFieldShowStudentType
+            - startIconDrawable : 아무거나
+            - hint : 운동부
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - text : " "
+                - enabled : false
+                - textColor : #000000
+                - singleLine : true
+
+        TextInputLayout
+            - id : textFieldShowStudentGender
+            - startIconDrawable : 아무거나
+            - hint : 성별
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - text : " "
+                - enabled : false
+                - textColor : #000000
+                - singleLine : true
+
+        TextInputLayout
+            - id : textFieldShowStudentKorean
+            - startIconDrawable : 아무거나
+            - hint : 국어점수
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - text : " "
+                - enabled : false
+                - textColor : #000000
+                - singleLine : true
+
+        TextInputLayout
+            - id : textFieldShowStudentEnglish
+            - startIconDrawable : 아무거나
+            - hint : 영어점수
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - text : " "
+                - enabled : false
+                - textColor : #000000
+                - singleLine : true
+
+
+        TextInputLayout
+            - id : textFieldShowStudentMath
+            - startIconDrawable : 아무거나
+            - hint : 수학점수
+            - layout_height : wrap_content
+            - layout_marginTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - text : " "
+                - enabled : false
+                - textColor : #000000
+                - singleLine : true
+
+[res/layout/fragment_modify_student.xml]
+
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id toolbarModifyStudent
+        - background : transparent
+
+    LinearLayout
+        - orientation : vertical
+        - padding : 10dp
+
+        TextInputLayout
+            - id : textFieldModifyStudentName
+            - startIconDrawable : 아무거나
+            - hint : 이름
+            - layout_height : wrap_content
+            - endIconMode : clear_text
+
+            TextInputEditText
+                - hint : 삭제
+                - singleLine : true
+
+        TextView
+            - text : 성별
+            - layout_marginTop : 10dp
+
+        MaterialButtonToggleGroup
+            - id : toggleModifyStudentGrade
+            - singleSelection : true
+            - checkedButton : buttonGradeOne
+            - selectionRequired : true
+            - layout_marginTop : 10dp
+
+            Button
+                - id : buttonGradeOne
+                - text : 1학년
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+            Button
+                - id : buttonGradeTow
+                - text : 2학년
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+            Button
+                - id : buttonGradeThree
+                - text : 3학년
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+        TextView
+            - text : 운동부
+            - layout_marginTop : 10dp
+
+        MaterialButtonToggleGroup
+            - id : toggleModifyStudentType
+            - singleSelection : true
+            - checkedButton : buttonTypeBasketBall
+            - selectionRequired : true
+            - layout_marginTop : 10dp
+
+            Button
+                - id : buttonTypeBasketBall
+                - text : 농구부
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+            Button
+                - id : buttonTypeSoccer
+                - text : 축구부
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+            Button
+                - id : buttonTypeBaseBall
+                - text : 야구부
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+        TextView
+            - text : 성별
+            - layout_marginTop : 10dp
+
+        MaterialButtonToggleGroup
+            - id : toggleModifyStudentGender
+            - singleSelection : true
+            - checkedButton : buttonGenderMale
+            - selectionRequired : true
+            - layout_marginTop : 10dp
+
+            Button
+                - id : buttonGenderMale
+                - text : 남자
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+            Button
+                - id : buttonGenderFemale
+                - text : 여자
+                - layout_width : match_parent
+                - layout_weight : 1
+                - style : OutlinedButton
+
+        TextInputLayout
+            - id : textFieldModifyStudentKorean
+            - startIconDrawable : 아무거나
+            - hint : 국어점수
+            - layout_height : wrap_content
+            - endIconMode : clear_text
+            - layout_marinTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - singleLine : true
+                - inputType : number
+
+        TextInputLayout
+            - id : textFieldModifyStudentEnglish
+            - startIconDrawable : 아무거나
+            - hint : 영어점수
+            - layout_height : wrap_content
+            - endIconMode : clear_text
+            - layout_marinTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - singleLine : true
+                - inputType : number
+
+        TextInputLayout
+            - id : textFieldModifyStudentMath
+            - startIconDrawable : 아무거나
+            - hint : 수학점수
+            - layout_height : wrap_content
+            - endIconMode : clear_text
+            - layout_marinTop : 10dp
+
+            TextInputEditText
+                - hint : 삭제
+                - singleLine : true
+                - inputType : number

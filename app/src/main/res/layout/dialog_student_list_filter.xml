@@ -15,46 +15,21 @@
         android:text="학년"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleStudentListGrade"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textFieldStudentListGrade"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:checkedButton="@id/buttonGradeAll"
-        app:singleSelection="true">
+        android:layout_marginTop="10dp">
 
-        <Button
-            android:id="@+id/buttonGradeAll"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="전체" />
-
-        <Button
-            android:id="@+id/buttonGradeOne"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="1학년" />
-
-        <Button
-            android:id="@+id/buttonGradeTwo"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="2학년" />
-
-        <Button
-            android:id="@+id/buttonGradeThree"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="3학년" />
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+            android:inputType="none"
+            android:text="전체"
+            app:simpleItems="@array/studentGrade" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
@@ -69,46 +44,21 @@
         android:text="운동부"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleStudentListType"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textFieldStudentListType"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:checkedButton="@id/buttonTypeAll"
-        app:singleSelection="true">
+        android:layout_marginTop="10dp">
 
-        <Button
-            android:id="@+id/buttonTypeAll"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="전체" />
-
-        <Button
-            android:id="@+id/buttonTypeBasketBall"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="농구부" />
-
-        <Button
-            android:id="@+id/buttonTypeSoccer"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="축구부" />
-
-        <Button
-            android:id="@+id/buttonTypeBaseBall"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="야구부" />
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+            android:inputType="none"
+            android:text="전체"
+            app:simpleItems="@array/studentType" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
@@ -129,6 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:checkedButton="@id/buttonGenderAll"
+        app:selectionRequired="true"
         app:singleSelection="true"
         tools:singleSelection="true">
 

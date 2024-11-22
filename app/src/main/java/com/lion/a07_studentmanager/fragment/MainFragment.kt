@@ -64,6 +64,12 @@ class MainFragment : Fragment() {
         val newFragment = when(fragmentName){
             // 학생 목록 화면
             SubFragmentName.STUDENT_LIST_FRAGMENT -> StudentListFragment(this)
+            // 학생 정보 검색 화면
+            SubFragmentName.SEARCH_STUDENT_FRAGMENT -> SearchStudentFragment(this)
+            // 학생 정보 보는 화면
+            SubFragmentName.SHOW_STUDENT_FRAGMENT -> ShowStudentFragment(this)
+            // 학생 정보 수정 화면
+            SubFragmentName.MODIFY_STUDENT_FRAGMENT ->  ModifyStudentFragment(this)
         }
 
         // bundle 객체가 null이 아니라면
@@ -98,4 +104,10 @@ class MainFragment : Fragment() {
 enum class SubFragmentName(val number:Int, val str:String){
     // 학생 목록 화면
     STUDENT_LIST_FRAGMENT(1, "StudentListFragment"),
+    // 학생 검색 화면
+    SEARCH_STUDENT_FRAGMENT(2, "SearchStudentFragment"),
+    // 학생 정보 보는 화면
+    SHOW_STUDENT_FRAGMENT(3, "ShowStudentFragment"),
+    // 학생 정보 수정 화면
+    MODIFY_STUDENT_FRAGMENT(4, "ModifyStudentFragment"),
 }
