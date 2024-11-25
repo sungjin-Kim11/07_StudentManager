@@ -1,5 +1,6 @@
 package com.lion.a07_studentmanager.fragment
 
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -55,6 +56,35 @@ class LoginFragment : Fragment() {
                 // MainFragment로 이동한다.
                 mainActivity.replaceFragment(FragmentName.MAIN_FRAGMENT, false, true, null)
             }
+        }
+    }
+
+    // 로그인 처리 메서드
+    fun processingLogin(){
+        fragmentLoginBinding.apply {
+            // 입력한 비밀번호를 가져온다.
+            val pw = textFieldLoginPassword.editText?.text!!.toString()
+
+            // 입력한 비밀번호가 없을 경우
+            if(pw.isEmpty()){
+                textFieldLoginPassword.error = "비밀번호를 입력해주세요"
+                return
+            }
+
+            // 저장된 비밀번호를 가져온다.
+            // Preferences 객체를 가져온다.
+            val managerPef = mainActivity.getSharedPreferences("manager", MODE_PRIVATE)
+            // 저장되어 있는 비밀번호를 가져온다.
+            val managerPassword = managerPef.getString("password", null)
+            // 비밀번호가 다를 경우
+            if(managerPassword != pw){
+                textFieldLoginPassword.error = "비밀번호를 잘못 입력하였습니다"
+                return
+            }
+
+            // 비밀번호를 제대로 입력했다면 화면을 이동한다.
+            // MainFragment로 이동한다.
+            mainActivity.replaceFragment(FragmentName.MAIN_FRAGMENT, false, true, null)
         }
     }
 }

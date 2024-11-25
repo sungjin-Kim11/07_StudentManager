@@ -34,7 +34,16 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        replaceFragment(FragmentName.LOGIN_FRAGMENT, false, false, null)
+        // Preferences 객체를 가져온다.
+        val managerPef = getSharedPreferences("manager", MODE_PRIVATE)
+        // 저장되어 있는 비밀번호를 가져온다.
+        val managerPassword = managerPef.getString("password", null)
+        // 저장되어 있는 비밀번호가 없다면..
+        if(managerPassword == null){
+            replaceFragment(FragmentName.SETTING_PASSWORD_FRAGMENT, false, false, null)
+        } else {
+            replaceFragment(FragmentName.LOGIN_FRAGMENT, false, false, null)
+        }
     }
 
 
