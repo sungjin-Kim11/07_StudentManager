@@ -54,7 +54,10 @@ class LoginFragment : Fragment() {
         fragmentLoginBinding.apply {
             buttonLoginSubmit.setOnClickListener {
                 // MainFragment로 이동한다.
-                mainActivity.replaceFragment(FragmentName.MAIN_FRAGMENT, false, true, null)
+                // mainActivity.replaceFragment(FragmentName.MAIN_FRAGMENT, false, true, null)
+
+                // 로그인 처리 메서드를 호출한다.
+                processingLogin()
             }
         }
     }
@@ -79,6 +82,8 @@ class LoginFragment : Fragment() {
             // 비밀번호가 다를 경우
             if(managerPassword != pw){
                 textFieldLoginPassword.error = "비밀번호를 잘못 입력하였습니다"
+                textFieldLoginPassword.editText?.setText("")
+                textFieldLoginPassword.editText?.requestFocus()
                 return
             }
 
