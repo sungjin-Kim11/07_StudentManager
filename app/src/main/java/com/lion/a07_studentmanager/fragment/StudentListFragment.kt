@@ -35,6 +35,8 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
         settingToolbarStudentList()
         // RecyclerView를 구성하는 메서드를 호출한다.
         settingRecyclerViewStudentList()
+        // FAB를 구성하는 메서드를 요청한다.
+        settingFabStudentList()
 
         return fragmentStudentListBinding.root
     }
@@ -81,6 +83,16 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
             builder.setPositiveButton("설정완료", null)
             builder.setNegativeButton("취소", null)
             builder.show()
+        }
+    }
+
+    // FAB를 구성하는 메서드
+    fun settingFabStudentList(){
+        fragmentStudentListBinding.apply {
+            fabStudentList.setOnClickListener {
+                // 학생 정보 입력 화면으로 이동한다.
+                mainFragment.replaceFragment(SubFragmentName.INPUT_STUDENT_FRAGMENT, true, true, null)
+            }
         }
     }
 
