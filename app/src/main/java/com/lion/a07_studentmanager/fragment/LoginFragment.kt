@@ -1,11 +1,11 @@
 package com.lion.a07_studentmanager.fragment
 
-import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import com.lion.a07_studentmanager.FragmentName
 import com.lion.a07_studentmanager.MainActivity
 import com.lion.a07_studentmanager.R

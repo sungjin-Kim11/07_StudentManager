@@ -14,6 +14,12 @@ import com.lion.a07_studentmanager.R
 import com.lion.a07_studentmanager.databinding.DialogStudentListFilterBinding
 import com.lion.a07_studentmanager.databinding.FragmentStudentListBinding
 import com.lion.a07_studentmanager.databinding.RowText1Binding
+import com.lion.a07_studentmanager.repository.StudentRepository
+import com.lion.a07_studentmanager.viewmodel.StudentModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 
 class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
@@ -22,9 +28,12 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
     lateinit var mainActivity: MainActivity
 
     // RecyclerView 구성을 위한 임시데이터
-    val tempData = Array(100){
-        "학생 ${it + 1}"
-    }
+//    val tempData = Array(100){
+//        "학생 ${it + 1}"
+//    }
+
+    // 학생 데이터를 담고 있는 리스트
+    var studentList = mutableListOf<StudentModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -35,7 +44,7 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
         settingToolbarStudentList()
         // RecyclerView를 구성하는 메서드를 호출한다.
         settingRecyclerViewStudentList()
-        // FAB를 구성하는 메서드를 요청한다.
+        // FAB를 구성하는 메서드를 호출한다.
         settingFabStudentList()
 
         return fragmentStudentListBinding.root
@@ -70,6 +79,9 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
             recyclerViewStudentList.layoutManager = LinearLayoutManager(mainActivity)
             val deco = MaterialDividerItemDecoration(mainActivity, MaterialDividerItemDecoration.VERTICAL)
             recyclerViewStudentList.addItemDecoration(deco)
+
+            // 데이터를 읽어와 리사이클러 뷰를 갱신한다.
+            refreshRecyclerView()
         }
     }
 
@@ -88,11 +100,24 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
 
     // FAB를 구성하는 메서드
     fun settingFabStudentList(){
-        fragmentStudentListBinding.apply {
-            fabStudentList.setOnClickListener {
-                // 학생 정보 입력 화면으로 이동한다.
-                mainFragment.replaceFragment(SubFragmentName.INPUT_STUDENT_FRAGMENT, true, true, null)
+       fragmentStudentListBinding.apply {
+           fabStudentList.setOnClickListener {
+               // 학생 정보 입력 화면으로 이동한다.
+               mainFragment.replaceFragment(SubFragmentName.INPUT_STUDENT_FRAGMENT, true, true, null)
+           }
+       }
+    }
+
+    // 데이터 베이스에서 데이터를 읽어와 RecyclerView를 갱신한다.
+    fun refreshRecyclerView(){
+        CoroutineScope(Dispatchers.Main).launch {
+            val work1 = async(Dispatchers.IO){
+                // 데이터를 읽어온다.
+                StudentRepository.selectStudentDataAll(mainActivity)
             }
+            studentList = work1.await()
+            // RecyclerView를 갱신한다.
+            fragmentStudentListBinding.recyclerViewStudentList.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -108,11 +133,11 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return tempData.size
+            return studentList.size
         }
 
         override fun onBindViewHolder(holder: ViewHolderStudentList, position: Int) {
-            holder.rowText1Binding.textViewRow.text = tempData[position]
+            holder.rowText1Binding.textViewRow.text = studentList[position].studentName
         }
     }
 }

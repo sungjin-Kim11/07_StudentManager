@@ -87,7 +87,7 @@ class SettingPasswordFragment : Fragment() {
                 textFieldSettingPassword1.error = "비멀번호를 입력해주세요"
                 inputFlag = false
             }
-
+            
             // 두 번째 비밀번호에 입력한 것이 없다면
             if(pw2.isEmpty()){
                 textFieldSettingPassword2.error = "비밀번호를 입력해주세요"

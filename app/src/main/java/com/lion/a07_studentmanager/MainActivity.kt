@@ -1,5 +1,6 @@
 package com.lion.a07_studentmanager
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.lion.a07_studentmanager.databinding.ActivityMainBinding
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialSharedAxis
 import com.lion.a07_studentmanager.fragment.LoginFragment
 import com.lion.a07_studentmanager.fragment.MainFragment
@@ -110,6 +112,17 @@ class MainActivity : AppCompatActivity() {
             // 포커스를 해제한다.
             currentFocus?.clearFocus()
         }
+    }
+
+    // 확인 버튼만 있는 다이얼로그를 띄우는 메서드
+    fun showConfirmDialog(title:String, message:String, callback:() -> Unit){
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        builder.setPositiveButton("확인"){ dialogInterface: DialogInterface, i: Int ->
+            callback()
+        }
+        builder.show()
     }
 }
 

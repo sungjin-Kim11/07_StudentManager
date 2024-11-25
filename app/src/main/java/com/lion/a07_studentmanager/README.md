@@ -1944,4 +1944,896 @@ class ModifyStudentFragment(val mainFragment: MainFragment) : Fragment() {
 
 ---
 
-# 학생 
+# 학생 정보를 입력하는 화면
+
+### Fragment를 생성한다.
+- InputStudentFragment
+```kt
+class InputStudentFragment(val mainFragment: MainFragment) : Fragment() {
+
+    lateinit var fragmentInputStudentBinding: FragmentInputStudentBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentInputStudentBinding = FragmentInputStudentBinding.inflate(inflater)
+        mainActivity = activity as MainActivity
+
+        return fragmentInputStudentBinding.root
+    }
+
+} 
+```
+
+### Fragment의 이름을 정의해준다.
+
+[fragment/MainFragment.kt]
+```kt
+    // 학생 정보 입력 화면
+    INPUT_STUDENT_FRAGMENT(5, "InputStudentFragment"),
+```
+
+
+### Fragment 객체를 생성한다.
+
+[fragment/MainFragment.kt - replaceFragment()]
+```kt
+            // 학생 정보 입력 화면
+            SubFragmentName.INPUT_STUDENT_FRAGMENT -> InputStudentFragment(this)
+```
+
+### FAB 버튼을 구성하는 메서드를 구현한다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // FAB를 구성하는 메서드
+    fun settingFabStudentList(){
+       fragmentStudentListBinding.apply {
+           fabStudentList.setOnClickListener {
+               // 학생 정보 입력 화면으로 이동한다.
+               mainFragment.replaceFragment(SubFragmentName.INPUT_STUDENT_FRAGMENT, true, true, null)
+           }
+       }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentListFragment.kt - onCreateView()]
+```kt
+        // FAB를 구성하는 메서드를 호출한다.
+        settingFabStudentList()
+```
+
+### 학생 정보 입력화면을 구성해준다.
+
+[res/layout/fragment_input_student.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="true"
+    tools:context=".fragment.InputStudentFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarInputStudent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldInputStudentName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="이름"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="학년" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleInputStudentGrade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:checkedButton="@id/buttonInputGradeOne"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/buttonInputGradeOne"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1학년" />
+
+            <Button
+                android:id="@+id/buttonInputGradeTow"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2학년" />
+
+            <Button
+                android:id="@+id/buttonInputGradeThree"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="3학년" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="운동부" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleInputStudentType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:checkedButton="@id/buttonInputTypeBasketBall"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/buttonInputTypeBasketBall"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="농구부" />
+
+            <Button
+                android:id="@+id/buttonInputTypeSoccer"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="축구부" />
+
+            <Button
+                android:id="@+id/buttonInputTypeBaseBall"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="야구부" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="성별" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleInputStudentGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:checkedButton="@id/buttonInputGenderMale"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/buttonInputGenderMale"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="남자" />
+
+            <Button
+                android:id="@+id/buttonInputGenderFemale"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="여자" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldInputStudentKorean"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="국어점수"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldInputStudentEnglish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="영어점수"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textFieldInputStudentMath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="수학점수"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/calendar_month_24px">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/buttonInputStudentSubmit"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="입력 완료" />
+
+    </LinearLayout>
+
+</LinearLayout>
+```
+
+---
+
+# 일단 여기까지 기능을 구현하겠습니다.
+
+---
+
+# 관리자 비밀번호 처리
+
+### Preferences에 관리자 비밀번호가 저장되어 있는지 확인한다.
+
+[MainActivity.kt - onCreate()]
+```kt
+        // Preferences 객체를 가져온다.
+        val managerPef = getSharedPreferences("manager", MODE_PRIVATE)
+        // 저장되어 있는 비밀번호를 가져온다.
+        val managerPassword = managerPef.getString("password", null)
+        // 저장되어 있는 비밀번호가 없다면..
+        if(managerPassword == null){
+            replaceFragment(FragmentName.SETTING_PASSWORD_FRAGMENT, false, false, null)
+        } else {
+            replaceFragment(FragmentName.LOGIN_FRAGMENT, false, false, null)
+        }
+```
+
+### 입력 완료 처리를 해준다.
+
+[fragment/SettingPasswordFragment.kt]
+```kt
+    // 비밀번호 입력 완료 처리 메서드
+    fun processingInputManagerPassword(){
+        fragmentSettingPasswordBinding.apply {
+            // 입력한 비밀번호를 가져온다.
+            val pw1 = textFieldSettingPassword1.editText?.text!!.toString()
+            val pw2 = textFieldSettingPassword2.editText?.text!!.toString()
+
+            // 입력을 제대로 했는지 확인하기 위한 변수
+            var inputFlag = true
+
+            // 첫 번째 비밀번호에 입력한 것이 없다면
+            if(pw1.isEmpty()){
+                textFieldSettingPassword1.error = "비멀번호를 입력해주세요"
+                inputFlag = false
+            }
+            
+            // 두 번째 비밀번호에 입력한 것이 없다면
+            if(pw2.isEmpty()){
+                textFieldSettingPassword2.error = "비밀번호를 입력해주세요"
+                inputFlag = false
+            }
+
+            // 두 비밀번호가 서로 다르다면
+            if(pw1.isNotEmpty() && pw2.isNotEmpty() && pw1 != pw2){
+                textFieldSettingPassword1.error = "입력하신 비빌번호가 서로 다릅니다"
+                textFieldSettingPassword2.error = "입력하신 비빌번호가 서로 다릅니다"
+
+                textFieldSettingPassword1.editText?.setText("")
+                textFieldSettingPassword2.editText?.setText("")
+
+                textFieldSettingPassword1.editText?.requestFocus()
+                inputFlag = false
+            }
+
+            // 입력이 제대로 되었다면
+            if(inputFlag){
+                // Preferences 객체를 가져온다.
+                val managerPef = mainActivity.getSharedPreferences("manager", MODE_PRIVATE)
+                // 관리자 비밀번호를 저장한다.
+                managerPef.edit {
+                    putString("password", pw1.toString())
+                }
+
+                val builder1 = MaterialAlertDialogBuilder(mainActivity)
+                builder1.setTitle("등록 완료")
+                builder1.setMessage("""
+                    관리자 비밀번호가 등록되었습니다.
+                    로그인해주세요
+                """.trimIndent())
+                builder1.setPositiveButton("확인"){ dialogInterface: DialogInterface, i: Int ->
+                    // LoginFragment로 교체한다.
+                    mainActivity.replaceFragment(FragmentName.LOGIN_FRAGMENT, false, true, null)
+                }
+
+                builder1.show()
+            }
+        }
+    }
+```
+
+### 메서드를 호출해준다.
+
+[fragment/settingPasswordFragment.kt - settingButtonSettingPasswordSubmit()]
+```kt
+            buttonSettingPasswordSubmit.setOnClickListener {
+                // 비밀번호 등록 처리하는 메서드를 호출해준다.
+                processingInputManagerPassword()
+
+//                val builder1 = MaterialAlertDialogBuilder(mainActivity)
+//                builder1.setTitle("등록 완료")
+//                builder1.setMessage("""
+//                    관리자 비밀번호가 등록되었습니다.
+//                    로그인해주세요
+//                """.trimIndent())
+//                builder1.setPositiveButton("확인"){ dialogInterface: DialogInterface, i: Int ->
+//                    // LoginFragment로 교체한다.
+//                    mainActivity.replaceFragment(FragmentName.LOGIN_FRAGMENT, false, true, null)
+//                }
+//
+//                builder1.show()
+            }
+```
+
+---
+
+# 관리자 로그인 처리
+
+### 로그인 처리하는 메서드를 구현해준다.
+
+[fragment/LoginFragment.kt]
+```kt
+    // 로그인 처리 메서드
+    fun processingLogin(){
+        fragmentLoginBinding.apply {
+            // 입력한 비밀번호를 가져온다.
+            val pw = textFieldLoginPassword.editText?.text!!.toString()
+
+            // 입력한 비밀번호가 없을 경우
+            if(pw.isEmpty()){
+                textFieldLoginPassword.error = "비밀번호를 입력해주세요"
+                return
+            }
+
+            // 저장된 비밀번호를 가져온다.
+            // Preferences 객체를 가져온다.
+            val managerPef = mainActivity.getSharedPreferences("manager", MODE_PRIVATE)
+            // 저장되어 있는 비밀번호를 가져온다.
+            val managerPassword = managerPef.getString("password", null)
+            // 비밀번호가 다를 경우
+            if(managerPassword != pw){
+                textFieldLoginPassword.error = "비밀번호를 잘못 입력하였습니다"
+                textFieldLoginPassword.editText?.setText("")
+                textFieldLoginPassword.editText?.requestFocus()
+                return
+            }
+
+            // 비밀번호를 제대로 입력했다면 화면을 이동한다.
+            // MainFragment로 이동한다.
+            mainActivity.replaceFragment(FragmentName.MAIN_FRAGMENT, false, true, null)
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragemnt/LoginFragment.kt - settingInitView()]
+```kt
+
+                // 로그인 처리 메서드를 호출한다.
+                processingLogin()
+```
+
+
+---
+
+# 학생 정보 저장 처리
+
+### 학생 정보를 관리할 VO 클래스를 정의한다.
+
+[database/StudentVO.kt]
+```kt
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "StudentTable")
+data class StudentVO(
+    @PrimaryKey(autoGenerate = true)
+    // 학생 번호
+    var studentIdx:Int = 0,
+    // 학생 이름
+    var studentName:String = "",
+    // 학년
+    var studentGrade:Int = 0,
+    // 운동부
+    var studentType:Int = 0,
+    // 성별
+    var studentGender:Int = 0,
+    // 국어점수
+    var studentKorean:Int = 0,
+    // 영어점수
+    var studentEnglish:Int = 0,
+    // 수학점수
+    var studentMath:Int = 0
+)
+```
+
+### dao 인터페이스를 만들어준다.
+
+[database/StudentDao.kt]
+
+```kt
+import androidx.room.Dao
+
+@Dao
+interface StudentDao {
+}
+```
+
+### database 파일을 만들어준다.
+
+[database/StudentDataBase.kt]
+
+```kt
+
+@Database(entities = [StudentVO::class], version = 1, exportSchema = true)
+abstract class StudentDataBase : RoomDatabase(){
+    // dao
+    abstract fun studentDao() : StudentDao
+
+    companion object{
+        // 데이터 베이스 객체를 담을 변수
+        var studentDatabase:StudentDataBase? = null
+        @Synchronized
+        fun getInstance(context: Context) : StudentDataBase?{
+            // 만약 데이터베이스 객체가 null이라면 객체를 생성한다.
+            // 데이터베이스 파일 이름 꼭 변경!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            synchronized(StudentDataBase::class){
+                studentDatabase = Room.databaseBuilder(
+                    context.applicationContext, StudentDataBase::class.java,
+                    "Student.db"
+                ).build()
+            }
+            return studentDatabase
+        }
+
+        // 데이터 베이스 객체가 소멸될 때 호출되는 메서드
+        fun destroyInstance(){
+            studentDatabase = null
+        }
+    }
+}
+```
+
+### 툴바를 구성하는 메서드를 구현해준다.
+
+[fragment/InputStudentFragment.kt]
+```kt
+    // 툴바를 구성하는 메서드
+    fun settingToolbarInputStudent(){
+        fragmentInputStudentBinding.apply {
+            toolbarInputStudent.title = "학생 정보 입력"
+            toolbarInputStudent.setNavigationIcon(R.drawable.arrow_back_24px)
+            toolbarInputStudent.setNavigationOnClickListener {
+                mainFragment.removeFragment(SubFragmentName.INPUT_STUDENT_FRAGMENT)
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+```kt
+        // 툴바를 구성하는 메서드를 호출한다.
+        settingToolbarInputStudent()
+```
+
+### 입력 요소에 대한 설정을 하는 메서드를 구현한다.
+```kt
+    // 입력 요소 초기 설정
+    fun settingTextField(){
+        fragmentInputStudentBinding.apply {
+            mainActivity.showSoftInput(textFieldInputStudentName.editText!!)
+        }
+    }
+```
+
+### 메서드를 호출한다
+
+```kt
+        // 입력 요소 초기 설정 메서드를 호출한다.
+        settingTextField()
+```
+
+### 다이얼로그를 띄워주는 메서드를 만들어준다.
+
+[MainActivity.kt]
+```kt
+    // 확인 버튼만 있는 다이얼로그를 띄우는 메서드
+    fun showConfirmDialog(title:String, message:String, callback:() -> Unit){
+        val builder = MaterialAlertDialogBuilder(this)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        builder.setPositiveButton("확인"){ dialogInterface: DialogInterface, i: Int ->
+            callback()
+        }
+        builder.show()
+    }
+```
+
+### util 패키지에 Value.kt를 만들어준다.
+
+[util/Value.kt]
+```kt
+
+enum class StudentGrade(val number:Int, val str:String){
+    STUDENT_GRADE_1(1, "1학년"),
+    STUDENT_GRADE_2(2, "2학년"),
+    STUDENT_GRADE_3(3, "3학년"),
+}
+
+enum class StudentType(val number:Int, val str:String){
+    STUDENT_TYPE_BASKETBALL(1, "농구부"),
+    STUDENT_TYPE_SOCCER(2, "축구부"),
+    STUDENT_TYPE_BASEBALL(3, "야구부"),
+}
+
+enum class StudentGender(val number:Int, val str:String){
+    STUDENT_GENDER_MALE(1, "남자"),
+    STUDENT_GENDER_FEMALE(2, "여자"),
+}
+
+fun numberToStudentGrade(studentGrade:Int) = when(studentGrade){
+    1 -> StudentGrade.STUDENT_GRADE_1
+    2 -> StudentGrade.STUDENT_GRADE_2
+    else -> StudentGrade.STUDENT_GRADE_3
+}
+
+fun numberToStudentType(studentType:Int) = when(studentType){
+    1 -> StudentType.STUDENT_TYPE_BASKETBALL
+    2 -> StudentType.STUDENT_TYPE_SOCCER
+    else -> StudentType.STUDENT_TYPE_BASEBALL
+}
+
+fun numberToStudentGender(studentGender:Int) = when(studentGender){
+    1 -> StudentGender.STUDENT_GENDER_MALE
+    else -> StudentGender.STUDENT_GENDER_FEMALE
+}
+```
+
+### InputStudentFragment에 대한 ViewModel 클래스를 정의한다
+
+[viewmodel/InputStudentViewModel.kt]
+
+```kt
+import com.lion.a07_studentmanager.util.StudentGender
+import com.lion.a07_studentmanager.util.StudentGrade
+import com.lion.a07_studentmanager.util.StudentType
+
+class InputStudentViewModel(
+    val studentIdx:Int,
+    val studentName:String,
+    val studentGrade:StudentGrade,
+    val studentType: StudentType,
+    val studentGender: StudentGender,
+    val studentKorean:Int,
+    val studentEnglish:Int,
+    val studentMath:Int
+)
+```
+
+### dao에 학생 정보를 저장하는 메서드를 정의해준다.
+
+[database/StudentDao.kt]
+
+```kt
+// 학생정보 저장
+@Insert
+fun insertStudentData(studentVO: StudentVO)
+```
+
+### Repository 클래스를 만들어준다.
+
+[database/StudentRepository.kt]
+```kt
+class StudentRepository {
+
+    companion object{
+        
+    }
+}
+```
+
+### Repository에 학생 정보를 저장하는 메서드를 구현해준다.
+
+[repository/StudentRepository.kt]
+```kt
+        // 학생 정보를 저장하는 메서드
+        fun insertStudentData(context: Context, inputStudentViewModel: InputStudentViewModel){
+            // 데이터를 VO 객체에 담는다.
+            val studentVO = StudentVO(
+                studentName = inputStudentViewModel.studentName,
+                studentGrade = inputStudentViewModel.studentGrade.number,
+                studentType = inputStudentViewModel.studentType.number,
+                studentGender = inputStudentViewModel.studentGender.number,
+                studentKorean = inputStudentViewModel.studentKorean,
+                studentEnglish = inputStudentViewModel.studentEnglish,
+                studentMath = inputStudentViewModel.studentMath
+            )
+            // 저장한다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            studentDataBase?.studentDao()?.insertStudentData(studentVO)
+        }
+```
+
+###  InputStudentFragment에 학생 정보를 저장하는 메서드를 구현해준다.
+
+[fragment/InputStudentFragment.kt]
+```kt
+    // 학생 정보 등록 완료 처리 메서드
+    fun processingAddStudentInfo(){
+        fragmentInputStudentBinding.apply {
+            // 사용자가 입력한 값을 가져온다
+            val studentName = textFieldInputStudentName.editText?.text?.toString()!!
+            val studentKorean = textFieldInputStudentKorean.editText?.text?.toString()!!
+            val studentEnglish = textFieldInputStudentEnglish.editText?.text?.toString()!!
+            val studentMath = textFieldInputStudentMath.editText?.text?.toString()!!
+
+            // 사용자 이름
+            if(studentName.isEmpty()){
+                mainActivity.showConfirmDialog("이름 입력 오류", "학생의 이름을 입력해세요"){
+                    textFieldInputStudentName.editText?.requestFocus()
+                }
+                return
+            }
+            // 국어점수
+            if(studentKorean.isEmpty()){
+                mainActivity.showConfirmDialog("국어 점수 입력 오류", "국어 점수를 입력해주세요"){
+                    textFieldInputStudentKorean.editText?.requestFocus()
+                }
+                return
+            }
+            // 영어점수
+            if(studentEnglish.isEmpty()){
+                mainActivity.showConfirmDialog("영어 점수 입력 오류", "영어 점수를 입력해주세요"){
+                    textFieldInputStudentEnglish.editText?.requestFocus()
+                }
+                return
+            }
+            // 수학점수
+            if(studentMath.isEmpty()){
+                mainActivity.showConfirmDialog("수학 점수 입력 오류", "수학 점수를 입력해주세요"){
+                    textFieldInputStudentMath.editText?.requestFocus()
+                }
+                return
+            }
+
+            // 점수를 정수값으로 변환한다.
+            val studentKoreanInt = studentKorean.toInt()
+            val studentEnglishInt = studentEnglish.toInt()
+            val studentMathInt = studentMath.toInt()
+            // 학년
+            val studentGrade = when(toggleInputStudentGrade.checkedButtonId){
+                R.id.buttonInputGradeOne -> StudentGrade.STUDENT_GRADE_1
+                R.id.buttonInputGradeTow -> StudentGrade.STUDENT_GRADE_2
+                else -> StudentGrade.STUDENT_GRADE_3
+            }
+            // 운동부
+            val studentType = when(toggleInputStudentType.checkedButtonId){
+                R.id.buttonInputTypeBasketBall -> StudentType.STUDENT_TYPE_BASKETBALL
+                R.id.buttonInputTypeSoccer -> StudentType.STUDENT_TYPE_SOCCER
+                else -> StudentType.STUDENT_TYPE_BASEBALL
+            }
+            // 성별
+            val studentGender = when(toggleInputStudentGender.checkedButtonId){
+                R.id.buttonInputGenderMale -> StudentGender.STUDENT_GENDER_MALE
+                else -> StudentGender.STUDENT_GENDER_FEMALE
+            }
+
+            // ViewModel 객체에 담는다.
+            val inputStudentViewModel = InputStudentViewModel(
+                0, studentName, studentGrade, studentType, studentGender,
+                studentKoreanInt, studentEnglishInt, studentMathInt
+            )
+
+            // 데이터를 저장하는 메서드를 호출한다.
+            CoroutineScope(Dispatchers.Main).launch{
+                val work1 = async(Dispatchers.IO){
+                    StudentRepository.insertStudentData(mainActivity, inputStudentViewModel)
+                }
+                work1.join()
+                // 이전 화면으로 돌아간다.
+                mainFragment.removeFragment(SubFragmentName.INPUT_STUDENT_FRAGMENT)
+            }
+        }
+    }
+
+```
+
+### 버튼을 구성하는 메서를 구현한다.
+
+[fragment/InputStudentFragment.kt]
+```kt
+    // 버튼 구성 메서드
+    fun settingButtonInputStudentSubmit(){
+        fragmentInputStudentBinding.apply {
+            buttonInputStudentSubmit.setOnClickListener {
+                // 학생 정보 등록 완료 처리 메서드를 호출한다.
+                processingAddStudentInfo()
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/InputStudentFragment.kt - onCreateView()]
+```kt
+        // 버튼 구성 메서드를 호출한다.
+        settingButtonInputStudentSubmit()
+```
+
+---
+
+# StudentListFragment의 기능을 구현한다.
+
+### dao에 학생 정보 전체를 가져오는 메서드를 정의한다.
+
+[database/StudentDao.kt]
+```kt
+    // 학생 정보 목록을 가져온다.
+    // select * from StudentTable
+    // StudentTable에서 모든 컬럼의 데이터를 가져온다.
+    // 조건이 없으므로 모든 행들을 가져온다.
+
+    // order by 컬럼명 : 컬럼명을 기준으로 행을 오름 차순 정렬한다.
+    // order by 컬럼명 desc : 컬럼명을 기준으로 행을 내림 차순 정렬한다.
+    @Query("""
+        select * from StudentTable
+        order by studentIdx desc
+    """)
+    fun selectStudentDataAll():List<StudentVO>
+```
+
+### Repository에 학생 데이터 전체를 가져오는 메서드를 구현한다.
+
+[repository/StudentRepository.kt]
+```kt
+        // 학생 데이터 전체를  가져오는 메서드
+        fun selectStudentDataAll(context: Context) : MutableList<StudentModel>{
+            // 데이터를 가져온다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            val studentList = studentDataBase?.studentDao()?.selectStudentDataAll()
+
+            // 학생 데이터를 담을 리스트
+            val tempList = mutableListOf<StudentModel>()
+
+            // 학생의 수 만큼 반복한다.
+            studentList?.forEach {
+                val studentModel = StudentModel(
+                    it.studentIdx, it.studentName, numberToStudentGrade(it.studentGrade),
+                    numberToStudentType(it.studentType), numberToStudentGender(it.studentGender),
+                    it.studentKorean, it.studentEnglish, it.studentMath
+                )
+                // 리스트에 담는다.
+                tempList.add(studentModel)
+            }
+            return tempList
+        }
+```
+
+### Recyclerview 구성을 위한 임시 데이터를 없애준다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // RecyclerView 구성을 위한 임시데이터
+//    val tempData = Array(100){
+//        "학생 ${it + 1}"
+//    }
+```
+
+### 학생 객체를 담고 있을 리스트를 선언해준다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // 학생 데이터를 담고 있는 리스트
+    var studentList = mutableListOf<StudentModel>()
+```
+
+### Adapter 메서드를 수정한다.
+
+
+[fragment/StudentListFragment.kt - RecyclerViewStudentListAdapter]
+```kt
+        override fun getItemCount(): Int {
+            return studentList.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolderStudentList, position: Int) {
+            holder.rowText1Binding.textViewRow.text = studentList[position].studentName
+        }
+```
+
+### 리사이클러 뷰를 갱신하는 메서드를 구현해준다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // 데이터 베이스에서 데이터를 읽어와 RecyclerView를 갱신한다.
+    fun refreshRecyclerView(){
+        CoroutineScope(Dispatchers.Main).launch {
+            val work1 = async(Dispatchers.IO){
+                // 데이터를 읽어온다.
+                StudentRepository.selectStudentDataAll(mainActivity)
+            }
+            studentList = work1.await()
+            // RecyclerView를 갱신한다.
+            fragmentStudentListBinding.recyclerViewStudentList.adapter?.notifyDataSetChanged()
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentListFragment.kt - settingRecyclerViewStudentList()]
+```kt
+            // 데이터를 읽어와 리사이클러 뷰를 갱신한다.
+            refreshRecyclerView()
+```
