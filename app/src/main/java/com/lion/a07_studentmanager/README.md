@@ -3179,3 +3179,338 @@ class StudentRepository {
         // 버튼을 구성하는 메서드를 호출한다.
         settingButton()
 ```
+
+---
+
+# 필터 기능 구현
+
+### 전체를 의미하는 값을 정의한다.
+
+[tools/Value.kt]
+
+```kt
+class ValueClass{
+    companion object{
+        // 전체를 의미하는 값
+        val VALUE_ALL = 0
+    }
+}
+```
+
+### 필터 값을 담을 변수를 선언한다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // 필터 값
+    var filterStudentGrade = ValueClass.VALUE_ALL
+    var filterStudentType = ValueClass.VALUE_ALL
+    var filterStudentGender = ValueClass.VALUE_ALL
+```
+
+### 다이얼로그의 필터 옵션들을 설정하는 코드를 작성한다.
+
+[fragment/StudentListFragment.kt - showFilterDialog]
+```kt
+            // 필터 옵션들 설정
+            // 학년
+            val gradeStr = when(filterStudentGrade){
+                StudentGrade.STUDENT_GRADE_1.number -> "1학년"
+                StudentGrade.STUDENT_GRADE_2.number -> "2학년"
+                StudentGrade.STUDENT_GRADE_3.number -> "3학년"
+                else -> "전체"
+            }
+            val a1 = dialogStudentListFilterBinding.textFieldStudentListGrade.editText as MaterialAutoCompleteTextView
+            a1.setText(gradeStr, false)
+            
+            // 운동부
+            val typeStr = when(filterStudentType){
+                StudentType.STUDENT_TYPE_BASKETBALL.number -> "농구부"
+                StudentType.STUDENT_TYPE_SOCCER.number -> "축구부"
+                StudentType.STUDENT_TYPE_BASEBALL.number -> "야구부"
+                else -> "전체"
+            }
+            val a2 = dialogStudentListFilterBinding.textFieldStudentListType.editText as MaterialAutoCompleteTextView
+            a2.setText(typeStr, false)
+
+            // 성별
+            when(filterStudentGender){
+                StudentGender.STUDENT_GENDER_MALE.number -> {
+                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderMale)
+                }
+                StudentGender.STUDENT_GENDER_FEMALE.number -> {
+                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderFemale)
+                }
+                else -> {
+                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderAll)
+                }
+            }
+```
+
+### 다이얼로그의 확인 버튼을 누르면 선택한 옵션의 값을 변수에 담아준다.
+
+[fragment/StudentListFragment.kt - showFilterDialog]
+```kt
+            builder.setPositiveButton("설정완료"){ dialogInterface: DialogInterface, i: Int ->
+                // 현재 설정되어 있는 필터의 값을 변수에 담아준다.
+                // 학년
+                filterStudentGrade = when(dialogStudentListFilterBinding.textFieldStudentListGrade.editText?.text.toString()){
+                    "1학년" -> StudentGrade.STUDENT_GRADE_1.number
+                    "2학년" -> StudentGrade.STUDENT_GRADE_2.number
+                    "3학년" -> StudentGrade.STUDENT_GRADE_3.number
+                    else -> ValueClass.VALUE_ALL
+                }
+                // 운동부
+                filterStudentType = when(dialogStudentListFilterBinding.textFieldStudentListType.editText?.text.toString()){
+                    "농구부" -> StudentType.STUDENT_TYPE_BASKETBALL.number
+                    "축구부" -> StudentType.STUDENT_TYPE_SOCCER.number
+                    "야구부" -> StudentType.STUDENT_TYPE_BASEBALL.number
+                    else -> ValueClass.VALUE_ALL
+                }
+                // 성별
+                filterStudentGender = when(dialogStudentListFilterBinding.toggleStudentListGender.checkedButtonId){
+                    R.id.buttonGenderMale -> StudentGender.STUDENT_GENDER_MALE.number
+                    R.id.buttonGenderFemale -> StudentGender.STUDENT_GENDER_FEMALE.number
+                    else -> ValueClass.VALUE_ALL
+                }
+            }
+```
+
+### 데이터를 필터링하는 메서드를 구현한다.
+
+[fragment/StudentRepository.kt]
+```kt
+    // 필터에 선택되어 있는 것만 남겨두는 메서드
+    fun filteringData(){
+        // 삭제할 객체를 담을 List
+        val removeData = mutableListOf<StudentModel>()
+        // 학년
+        if(filterStudentGrade != ValueClass.VALUE_ALL){
+            studentList.forEach {
+                // 필터에 설정되어 있는 학년이 아닌 경우..
+                if(it.studentGrade.number != filterStudentGrade){
+                    removeData.add(it)
+                }
+            }
+            // 객체들을 제거한다.
+            studentList.removeAll(removeData)
+        }
+
+        removeData.clear()
+
+        // 운동부
+        if(filterStudentType != ValueClass.VALUE_ALL){
+            studentList.forEach {
+                // 필터에 설정되어 있는 운동부가 아닌 경우..
+                if(it.studentType.number != filterStudentType){
+                    removeData.add(it)
+                }
+            }
+            studentList.removeAll(removeData)
+        }
+
+        removeData.clear()
+        // 성별
+        if(filterStudentGender != ValueClass.VALUE_ALL){
+            studentList.forEach {
+                // 필터에 설정되어 있는 성별이 아닌 경우..
+                if(it.studentGender.number != filterStudentGender){
+                    removeData.add(it)
+                }
+            }
+            studentList.removeAll(removeData)
+        }
+    }
+```
+
+### Recyclerview를 갱신하는 메서드에서 메서드를 호출해준다.
+
+[fragment/StudentRepository.kt - refreshRecyclerView()]
+```kt
+                // 데이터를 필터링한다
+                filteringData()
+```
+
+### RecyclerVioew를 갱신하는 메서드를 호출한다.
+
+[fragment/StudnetRepository.kt - showFilterDialog()]
+
+```kt
+                // RecyclerView를 갱신한다.
+                refreshRecyclerView()
+```
+
+---
+
+# 만약 학생 정보를 새롭게 등록하고 돌아왔을 경우 필터를 초기화 하고 싶다면..
+- 만약 유지하고 싶다면 이 작업은 하지 마세요~~
+- 이 작업은 다른 프래그먼트를 갔다 돌아왔을 경우 무언가 작업을 해야할 경우를 예시로 하는 작업이다.
+- 만약 Activity 였다면 ActivityResultLauncher를 이용하면 된다.
+- 하지만 Fragment는 다른 Fragment를 갔다 돌아왔을 경우에 어떤 Fragment에서 돌아왔는지를 구분할 수 없다.
+- 이에 변수를 정의해서 어떤 Fragment를 갔다 왔는지를 구분해줘야 한다.
+
+### 학생 정보 입력 화면에서 돌아온 것인지를 구분하는 변수를 정의해준다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // InputStudenFragment 를 갔다 왔는지 구분하기 위한 변수
+    var isBackToInputStudentFragment = false
+```
+
+### 학생 정보 입력 화면으로 이동할 때 변수에 true를 넣어준다.
+
+[fragment/StudentListFragment.kt - settingFabStudentList()]
+```kt
+               isBackToInputStudentFragment = true
+```
+
+### onCreateView에서 갔다 돌아왔을 때를 처리해준다.
+
+[fragment/StudentListFragment.kt - onCreateView()]
+```kt
+        // InputStudentFragment에서 돌아온 경우라면
+        if(isBackToInputStudentFragment == true){
+            // 필요한 작업을 한다.
+            filterStudentGender = ValueClass.VALUE_ALL
+            filterStudentType = ValueClass.VALUE_ALL
+            filterStudentGrade = ValueClass.VALUE_ALL
+
+            isBackToInputStudentFragment = false
+        }
+```
+
+---
+
+# 검색
+
+### UI 작업할 때 빠진 부분을 부분을 작업한다
+
+[res/layout/fragment_search_student.xml]
+```xml
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+```
+
+### 검색어를 입력하는 요소에 포커스를 준다.
+
+[fragment/SearchStudentFragment.kt]
+```kt
+    // 입력 요소 설정
+    fun settingTextField(){
+        fragmentSearchStudentBinding.apply {
+            // 검색창에 포커스를 준다.
+            mainActivity.showSoftInput(textFieldSearchStudentName.editText!!)
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/SearchStudentFragment.kt - onCreateView()]
+```kt
+        // 입력 요소 설정 메서드를 호출한다.
+        settingTextField()
+```
+
+### 리사이클러뷰 구성을 위한 임시 데이터는 제거한다.
+
+[fragment/SearchStudentFragment.kt]
+```kt
+    // 리사이클러 뷰 구성을 위한 임시 데이터
+//    val tempData = Array(100){
+//        "학생 ${it + 1}"
+//    }
+```
+
+### 리사이클로 뷰 구성을 위한 리스트를 선언해준다.
+
+[fragment/SearchStudentFragment.kt]
+```kt
+    // 리사클리어뷰 구성을 위한 리스트
+    var studentList = mutableListOf<StudentModel>()
+```
+
+### 어뎁터를 수정한다.
+
+[fragment/SearchStudentFragment.kt - RecyclerViewStudentSearchAdapter]
+```kt
+        override fun getItemCount(): Int {
+            return studentList.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolderStudentSearch, position: Int) {
+            holder.rowText1Binding.textViewRow.text = studentList[position].studentName
+        }
+```
+
+### dao 에 데이터를 가져오기 위한 메서드를 정의한다.
+
+[database/StudentDao.kt]
+```kt
+    // where studentName = :studentName
+    // studentName 컬럼의 값이 지정된 값과 같은 행만 가져온다.
+    @Query("""
+        select * from StudentTable
+        where studentName = :studentName
+        order by studentIdx desc
+    """)
+    fun selectStudentDataAllByStudentName(studentName:String):List<StudentVO>
+```
+
+### Repsitory에 이름을 통해 검색하는 메서드를 구현한다.
+
+[repository/StudentRepository.kt]
+```kt
+        // 학생이름으로 검색하여 학생 데이터 전체를 가져오는 메서드
+        fun selectStudentDataAllByStudentName(context: Context, studentName:String) : MutableList<StudentModel>{
+            // 데이터를 가져온다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            val studentList = studentDataBase?.studentDao()?.selectStudentDataAllByStudentName(studentName)
+
+            // 학생 데이터를 담을 리스트
+            val tempList = mutableListOf<StudentModel>()
+
+            // 학생의 수 만큼 반복한다.
+            studentList?.forEach {
+                val studentModel = StudentModel(
+                    it.studentIdx, it.studentName, numberToStudentGrade(it.studentGrade),
+                    numberToStudentType(it.studentType), numberToStudentGender(it.studentGender),
+                    it.studentKorean, it.studentEnglish, it.studentMath
+                )
+                // 리스트에 담는다.
+                tempList.add(studentModel)
+            }
+            return tempList
+        }
+```
+
+### 키보드의 엔터키를 눌렀을 때 처리를 구현한다.
+
+[fragment/SearchStudentFragment.kt - settingTextField()]
+```kt
+            // 키보드의 엔터를 누르면 동작하는 리스너
+            textFieldSearchStudentName.editText?.setOnEditorActionListener { v, actionId, event ->
+                // 검색 데이터를 가져와 보여준다.
+                CoroutineScope(Dispatchers.Main).launch {
+                    val work1 = async(Dispatchers.IO){
+                        val keyword = textFieldSearchStudentName.editText?.text.toString()
+                        StudentRepository.selectStudentDataAllByStudentName(mainActivity, keyword)
+                    }
+                    studentList = work1.await()
+                    recyclerViewSearchStudent.adapter?.notifyDataSetChanged()
+                }
+                mainActivity.hideSoftInput()
+                true
+            }
+```
+
+### 항목을 눌렀을 때의 부분을 수정한다.
+
+[fragment/SearchStudentFragment.kt - RecyclerViewStudentSearchAdapter]
+```kt
+                // 학생 정보를 보는 화면으로 이동한다.
+                val dataBundle = Bundle()
+                dataBundle.putInt("studentIdx", studentList[adapterPosition].studentIdx)
+
+                mainFragment.replaceFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT,
+                    true, true, dataBundle)
+```

@@ -50,6 +50,28 @@ class StudentRepository {
             return tempList
         }
 
+        // 학생이름으로 검색하여 학생 데이터 전체를 가져오는 메서드
+        fun selectStudentDataAllByStudentName(context: Context, studentName:String) : MutableList<StudentModel>{
+            // 데이터를 가져온다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            val studentList = studentDataBase?.studentDao()?.selectStudentDataAllByStudentName(studentName)
+
+            // 학생 데이터를 담을 리스트
+            val tempList = mutableListOf<StudentModel>()
+
+            // 학생의 수 만큼 반복한다.
+            studentList?.forEach {
+                val studentModel = StudentModel(
+                    it.studentIdx, it.studentName, numberToStudentGrade(it.studentGrade),
+                    numberToStudentType(it.studentType), numberToStudentGender(it.studentGender),
+                    it.studentKorean, it.studentEnglish, it.studentMath
+                )
+                // 리스트에 담는다.
+                tempList.add(studentModel)
+            }
+            return tempList
+        }
+
         // 학생 한명의 데이터를 가져오는 메서드
         fun selectStudentDataByStudentIdx(context: Context, studentIdx:Int) : StudentModel{
             val studentDataBase = StudentDataBase.getInstance(context)

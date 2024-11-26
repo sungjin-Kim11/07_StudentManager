@@ -25,6 +25,15 @@ interface StudentDao {
     """)
     fun selectStudentDataAll():List<StudentVO>
 
+    // where studentName = :studentName
+    // studentName 컬럼의 값이 지정된 값과 같은 행만 가져온다.
+    @Query("""
+        select * from StudentTable
+        where studentName = :studentName
+        order by studentIdx desc
+    """)
+    fun selectStudentDataAllByStudentName(studentName:String):List<StudentVO>
+
     // 학생 번호와 같은 학생의 데이터를 반환한다.
     // where studentIdx = 값
     // 테이블에 있는 행들 중에 studentIdx 컬럼의 값이 지정된 값과 같은 행들만 가져온다.
