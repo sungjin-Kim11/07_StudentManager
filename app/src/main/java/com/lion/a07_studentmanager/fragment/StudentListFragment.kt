@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -123,12 +124,21 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
 
     // RecyclerView의 어뎁터
     inner class RecyclerViewStudentListAdapter : RecyclerView.Adapter<RecyclerViewStudentListAdapter.ViewHolderStudentList>(){
-        // ViewHOlder
-        inner class ViewHolderStudentList(val rowText1Binding: RowText1Binding) : RecyclerView.ViewHolder(rowText1Binding.root)
+        // ViewHolder
+        inner class ViewHolderStudentList(val rowText1Binding: RowText1Binding) : RecyclerView.ViewHolder(rowText1Binding.root), OnClickListener{
+            override fun onClick(v: View?) {
+                // 학생의 번호를 담는다.
+                val dataBundle = Bundle()
+                dataBundle.putInt("studentIdx", studentList[adapterPosition].studentIdx)
+                // 학생 정보를 보는 화면으로 이동한다.
+                mainFragment.replaceFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT, true, true, dataBundle)
+            }
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderStudentList {
             val rowText1Binding = RowText1Binding.inflate(layoutInflater, parent, false)
             val viewHolderStudentList = ViewHolderStudentList(rowText1Binding)
+            rowText1Binding.root.setOnClickListener(viewHolderStudentList)
             return viewHolderStudentList
         }
 

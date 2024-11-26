@@ -49,5 +49,41 @@ class StudentRepository {
             }
             return tempList
         }
+
+        // 학생 한명의 데이터를 가져오는 메서드
+        fun selectStudentDataByStudentIdx(context: Context, studentIdx:Int) : StudentModel{
+            val studentDataBase = StudentDataBase.getInstance(context)
+            // 학생 데이터를 가져온다.
+            val studentVo = studentDataBase?.studentDao()?.selectStudentDataByStudentIdx(studentIdx)
+            // Model 객체에 담는다.
+            val studentModel = StudentModel(
+                studentVo?.studentIdx!!, studentVo.studentName, numberToStudentGrade(studentVo.studentGrade),
+                numberToStudentType(studentVo.studentType), numberToStudentGender(studentVo.studentGender),
+                studentVo.studentKorean, studentVo.studentEnglish, studentVo.studentMath
+            )
+            return studentModel
+        }
+
+        // 학생 정보를 삭제하는 메서드
+        fun deleteStudentDataByStudentIdx(context: Context, studentIdx:Int){
+            // 삭제한다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            val studentVO = StudentVO(studentIdx = studentIdx)
+            studentDataBase?.studentDao()?.deleteStudentData(studentVO)
+        }
+
+        // 학생 정보를 수정하는 메서드
+        fun updateStudentDataByStudentIdx(context: Context, studentModel: StudentModel){
+            // VO에 데이터를 담는다.
+            val studentVO = StudentVO(
+                studentModel.studentIdx, studentModel.studentName, studentModel.studentGrade.number,
+                studentModel.studentType.number, studentModel.studentGender.number,
+                studentModel.studentKorean, studentModel.studentEnglish, studentModel.studentMath
+            )
+            // 수정하는 메서드를 호출한다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            studentDataBase?.studentDao()?.updateStudentData(studentVO)
+        }
     }
 }
+

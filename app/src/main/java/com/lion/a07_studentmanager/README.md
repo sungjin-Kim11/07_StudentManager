@@ -2837,3 +2837,345 @@ class StudentRepository {
             // 데이터를 읽어와 리사이클러 뷰를 갱신한다.
             refreshRecyclerView()
 ```
+
+---
+
+# 학생 목록에서 학생을 눌렀을 때를 구현한다.
+
+### RecyclerView의 항목을 누르면 학생 정보를 보는 화면으로 이동할 수 있도록 구현한다.
+
+[fragment/StudentListFragment.kt - RecyclerViewStudentListAdapter]
+```kt
+        // ViewHolder
+        inner class ViewHolderStudentList(val rowText1Binding: RowText1Binding) : RecyclerView.ViewHolder(rowText1Binding.root), OnClickListener{
+            override fun onClick(v: View?) {
+                // 학생의 번호를 담는다.
+                val dataBundle = Bundle()
+                dataBundle.putInt("studentIdx", studentList[adapterPosition].studentIdx)
+                // 학생 정보를 보는 화면으로 이동한다.
+                mainFragment.replaceFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT, true, true, dataBundle)
+            }
+        }
+```
+
+### 리스너를 연결해준다.
+
+[fragment/StudentListFragment.kt - RecyclerViewStudentListAdapter]
+```kt
+        rowText1Binding.root.setOnClickListener(viewHolderStudentList)
+```
+
+### 학생의 데이터를 가져오는 메서드를 dao에 정의한다.
+
+[database/StudentDao.kt]
+```kt
+    // 학생 번호와 같은 학생의 데이터를 반환한다.
+    // where studentIdx = 값
+    // 테이블에 있는 행들 중에 studentIdx 컬럼의 값이 지정된 값과 같은 행들만 가져온다.
+    @Query("""
+        select * from StudentTable
+        where studentIdx = :studentIdx
+    """)
+    fun selectStudentDataByStudentIdx(studentIdx:Int):StudentVO
+```
+
+### Repository에 학생 한명의 정보를 가져오는 메서드를 만들어준다.
+
+```kt
+        // 학생 한명의 데이터를 가져오는 메서드
+        fun selectStudentDataByStudentIdx(context: Context, studentIdx:Int) : StudentModel{
+            val studentDataBase = StudentDataBase.getInstance(context)
+            // 학생 데이터를 가져온다.
+            val studentVo = studentDataBase?.studentDao()?.selectStudentDataByStudentIdx(studentIdx)
+            // Model 객체에 담는다.
+            val studentModel = StudentModel(
+                studentVo?.studentIdx!!, studentVo.studentName, numberToStudentGrade(studentVo.studentGrade),
+                numberToStudentType(studentVo.studentType), numberToStudentGender(studentVo.studentGender),
+                studentVo.studentKorean, studentVo.studentEnglish, studentVo.studentMath
+            )
+            return studentModel
+        }
+```
+
+### 데이터를 가져와 보여주는 메서드를 구현한다.
+
+[fragment/ShowStudentFragment.kt]
+```kt
+    // 학생 데이터를 가져와 보여주는 메서드
+    fun settingTextField(){
+        CoroutineScope(Dispatchers.Main).launch {
+            val work1 = async(Dispatchers.IO){
+                // 학생 번호를 가져온다.
+                val studentIdx = arguments?.getInt("studentIdx")
+                // 학생 데이터를 가져온다.
+                StudentRepository.selectStudentDataByStudentIdx(mainActivity, studentIdx!!)
+            }
+            val studentModel = work1.await()
+
+            fragmentShowStudentBinding.apply {
+                textFieldShowStudentName.editText?.setText(studentModel.studentName)
+                textFieldShowStudentGrade.editText?.setText(studentModel.studentGrade.str)
+                textFieldShowStudentType.editText?.setText(studentModel.studentType.str)
+                textFieldShowStudentGender.editText?.setText(studentModel.studentGender.str)
+                textFieldShowStudentKorean.editText?.setText(studentModel.studentKorean.toString())
+                textFieldShowStudentEnglish.editText?.setText(studentModel.studentEnglish.toString())
+                textFieldShowStudentMath.editText?.setText(studentModel.studentMath.toString())
+            }
+        }
+    }
+```
+
+### 메서드를 호출해준다
+
+[fragment/ShowStudentFragment.kt - onCreateView()]
+```kt
+        // 학생 데이터를 가져와 보여주는 메서드
+        settingTextField()
+```
+
+---
+
+# 학생 데이터 삭제
+
+### dao에 학생 데이터를 삭제하는 메서드를 정의한다.
+
+[database/StudentDao.kt]
+```kt
+    // 학생 정보를 삭제한다.
+    // 매개변수로 받은 객체가 가지고 있는 프로퍼티 중에 primary key 프로퍼티가 조건식이 된다.
+    @Delete
+    fun deleteStudentData(studentVO: StudentVO)
+```
+
+### Repository에 삭제하는 메서드를 만들어준다.
+
+[repository/StudentRepository.kt]
+```kt
+        // 학생 정보를 삭제하는 메서드
+        fun deleteStudentDataByStudentIdx(context: Context, studentIdx:Int){
+            // 삭제한다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            val studentVO = StudentVO(studentIdx = studentIdx)
+            studentDataBase?.studentDao()?.deleteStudentData(studentVO)
+        }
+```
+
+### 삭제 처리하는 메서드를 구현한다.
+
+[fragment/ShowStudentFragment.kt]
+```kt
+    // 학생 정보를 삭제하는 메서드
+    fun deleteStudentData(){
+        CoroutineScope(Dispatchers.Main).launch {
+            val work1 = async(Dispatchers.IO){
+                // 삭제한다.
+                val studentIdx = arguments?.getInt("studentIdx")!!
+                StudentRepository.deleteStudentDataByStudentIdx(mainActivity, studentIdx)
+            }
+            work1.join()
+            // 학생 목록을 보는 화면으로 돌아간다.
+            mainFragment.removeFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT)
+        }
+    }
+```
+
+### 삭제 메뉴를 눌렀을 때를 구현한다.
+
+[fragment/ShowStudentFragment.kt - settingToolbarShowStudent()]
+```kt
+                    R.id.show_student_menu_remove -> {
+                        // mainFragment.removeFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT)
+                        // 다이얼로를 띄운다.
+                        val builder = MaterialAlertDialogBuilder(mainActivity)
+                        builder.setTitle("학생 정보 삭제")
+                        builder.setMessage("학생 정보 삭제시 복구가 불가능합니다")
+                        builder.setNegativeButton("취소", null)
+                        builder.setPositiveButton("삭제"){ dialogInterface: DialogInterface, i: Int ->
+                            // 삭제 메서드를 호출한다.
+                            deleteStudentData()
+                        }
+                        builder.show()
+                    }
+```
+
+---
+
+# 학생 정보 수정 구현
+
+### 학생 정보를 보는 화면에서 수정 화면으로 이동할 때 학생 번호를 전달한다.
+
+[fragment/ShowStudentFragment.kt - settingToolbarShowStudent()]
+```kt
+                    R.id.show_student_menu_modify -> {
+                        // 정보 수정 화면으로 이동한다.
+
+                        // 학생 번호를 추출하여 전달해준다.
+                        val studentIdx = arguments?.getInt("studentIdx")
+                        val dataBundle = Bundle()
+                        dataBundle.putInt("studentIdx", studentIdx!!)
+
+                        mainFragment.replaceFragment(SubFragmentName.MODIFY_STUDENT_FRAGMENT,
+                            true, true, dataBundle)
+                    }
+```
+
+### 입력 요소를 구성하는 메서드를 구현한다.
+
+[fragment/ModifyStudentFragment.kt - settingTextField()]
+```kt
+    // 입력 요소를 구성하는 메서드
+    fun settingTextField(){
+        fragmentModifyStudentBinding.apply {
+            // 학생 번호를 가져온다.
+            val studentIdx = arguments?.getInt("studentIdx")!!
+            // 학생 데이터를 가져온다.
+            CoroutineScope(Dispatchers.Main).launch {
+                val work1 = async(Dispatchers.IO){
+                    StudentRepository.selectStudentDataByStudentIdx(mainActivity, studentIdx)
+                }
+                val studentModel = work1.await()
+
+                textFieldModifyStudentName.editText?.setText(studentModel.studentName)
+
+                when(studentModel.studentGrade){
+                    StudentGrade.STUDENT_GRADE_1 -> toggleModifyStudentGrade.check(R.id.buttonGradeOne)
+                    StudentGrade.STUDENT_GRADE_2 -> toggleModifyStudentGrade.check(R.id.buttonGradeTow)
+                    StudentGrade.STUDENT_GRADE_3 -> toggleModifyStudentGrade.check(R.id.buttonGradeThree)
+                }
+
+                when(studentModel.studentType){
+                    StudentType.STUDENT_TYPE_BASEBALL -> toggleModifyStudentType.check(R.id.buttonTypeBaseBall)
+                    StudentType.STUDENT_TYPE_BASKETBALL -> toggleModifyStudentType.check(R.id.buttonTypeBasketBall)
+                    StudentType.STUDENT_TYPE_SOCCER -> toggleModifyStudentType.check(R.id.buttonTypeSoccer)
+                }
+
+                when(studentModel.studentGender){
+                    StudentGender.STUDENT_GENDER_MALE -> toggleModifyStudentGender.check(R.id.buttonGenderMale)
+                    StudentGender.STUDENT_GENDER_FEMALE -> toggleModifyStudentGender.check(R.id.buttonGenderFemale)
+                }
+
+                textFieldModifyStudentKorean.editText?.setText(studentModel.studentKorean.toString())
+                textFieldModifyStudentEnglish.editText?.setText(studentModel.studentEnglish.toString())
+                textFieldModifyStudentMath.editText?.setText(studentModel.studentMath.toString())
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/ModifyStudentFragment.kt - onCreateView()]
+```kt
+        // 입력 요소를 구성하는 메서드
+        settingTextField()
+```
+
+### dao에 학생 정보를 수정하는 메서드를 정의해준다.
+
+[database/StudentDao.kt]
+```kt
+
+    // 학생 정보를 수정한다.
+    // 매개변수로 받은 객체가 가지고 있는 프로퍼티 중에 primary key 프로퍼티가 조건식이 된다.
+    @Update
+    fun updateStudentData(studentVO: StudentVO)
+```
+
+### Repository에 학생 정보를 수정하는 메서드를 만들어준다.
+
+[repository/StudentRepository.kt]
+```kt
+        // 학생 정보를 수정하는 메서드
+        fun updateStudentDataByStudentIdx(context: Context, studentModel: StudentModel){
+            // VO에 데이터를 담는다.
+            val studentVO = StudentVO(
+                studentModel.studentIdx, studentModel.studentName, studentModel.studentGrade.number,
+                studentModel.studentType.number, studentModel.studentGender.number,
+                studentModel.studentKorean, studentModel.studentEnglish, studentModel.studentMath
+            )
+            // 수정하는 메서드를 호출한다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            studentDataBase?.studentDao()?.updateStudentData(studentVO)
+        }
+```
+
+### 수정 처리 메서드를 구현한다.
+
+[fragment/ModifyStudentFragment.kt]
+```kt
+
+    // 학생 정보 수정 처리 메서드
+    fun processingModifyStudentData(){
+        fragmentModifyStudentBinding.apply {
+            // 데이터를 추출한다.
+            val studentIdx = arguments?.getInt("studentIdx")!!
+            val studentName = textFieldModifyStudentName.editText?.text.toString()
+            // 학년
+            val studentGrade = when(toggleModifyStudentGrade.checkedButtonId){
+                R.id.buttonGradeOne -> StudentGrade.STUDENT_GRADE_1
+                R.id.buttonGradeTow -> StudentGrade.STUDENT_GRADE_2
+                else -> StudentGrade.STUDENT_GRADE_3
+            }
+            // 운동부
+            val studentType = when(toggleModifyStudentType.checkedButtonId){
+                R.id.buttonTypeBasketBall -> StudentType.STUDENT_TYPE_BASKETBALL
+                R.id.buttonTypeSoccer -> StudentType.STUDENT_TYPE_SOCCER
+                else -> StudentType.STUDENT_TYPE_BASEBALL
+            }
+            // 성별
+            val studentGender = when(toggleModifyStudentGender.checkedButtonId){
+                R.id.buttonGenderMale -> StudentGender.STUDENT_GENDER_MALE
+                else -> StudentGender.STUDENT_GENDER_FEMALE
+            }
+            val studentKorean = textFieldModifyStudentKorean.editText?.text.toString().toInt()
+            val studentEnglish = textFieldModifyStudentEnglish.editText?.text.toString().toInt()
+            val studentMath = textFieldModifyStudentMath.editText?.text.toString().toInt()
+
+            // 모델에 담아둔다.
+            val studentModel = StudentModel(
+                studentIdx, studentName, studentGrade, studentType, studentGender,
+                studentKorean, studentEnglish, studentMath
+            )
+            // 수정 처리 메서를 호출해준다.
+            CoroutineScope(Dispatchers.Main).launch {
+                val work1 = async(Dispatchers.IO){
+                    StudentRepository.updateStudentDataByStudentIdx(mainActivity, studentModel)
+                }
+                work1.join()
+                // 이전 화면으로 돌아간다.
+                mainFragment.removeFragment(SubFragmentName.MODIFY_STUDENT_FRAGMENT)
+            }
+        }
+    }
+```
+
+### 수정 완료 버튼을 눌렀을 때 호출될 메서드를 구현한다.
+
+```kt
+
+    // 버튼을 구성하는 메서드
+    fun settingButton(){
+        fragmentModifyStudentBinding.apply {
+            buttonModifyStudentSubmit.setOnClickListener {
+                // 다이얼로그를 띄운다.
+                val builder = MaterialAlertDialogBuilder(mainActivity)
+                builder.setTitle("학생 정보 수정")
+                builder.setMessage("학생 정보 수정시 복구가 불가능합니다")
+                builder.setNegativeButton("취소", null)
+                builder.setPositiveButton("수정"){ dialogInterface: DialogInterface, i: Int ->
+                    // 수정 메서드를 호출한다.
+                    processingModifyStudentData()
+                }
+                builder.show()
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/ModifyStudentFragment.kt - onCreateView()]
+```kt
+        // 버튼을 구성하는 메서드를 호출한다.
+        settingButton()
+```
