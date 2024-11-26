@@ -1,8 +1,6 @@
 package com.lion.a07_studentmanager.fragment
 
-import android.content.DialogInterface
 import android.os.Bundle
-import android.renderscript.Sampler.Value
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,17 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.lion.a07_studentmanager.MainActivity
 import com.lion.a07_studentmanager.R
 import com.lion.a07_studentmanager.databinding.DialogStudentListFilterBinding
 import com.lion.a07_studentmanager.databinding.FragmentStudentListBinding
 import com.lion.a07_studentmanager.databinding.RowText1Binding
 import com.lion.a07_studentmanager.repository.StudentRepository
-import com.lion.a07_studentmanager.util.StudentGender
-import com.lion.a07_studentmanager.util.StudentGrade
-import com.lion.a07_studentmanager.util.StudentType
-import com.lion.a07_studentmanager.util.ValueClass
 import com.lion.a07_studentmanager.viewmodel.StudentModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,28 +36,10 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
     // 학생 데이터를 담고 있는 리스트
     var studentList = mutableListOf<StudentModel>()
 
-    // 필터 값
-    var filterStudentGrade = ValueClass.VALUE_ALL
-    var filterStudentType = ValueClass.VALUE_ALL
-    var filterStudentGender = ValueClass.VALUE_ALL
-
-    // InputStudenFragment 를 갔다 왔는지 구분하기 위한 변수
-    var isBackToInputStudentFragment = false
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         fragmentStudentListBinding = FragmentStudentListBinding.inflate(inflater, container, false)
         mainActivity = activity as MainActivity
-
-        // InputStudentFragment에서 돌아온 경우라면
-        if(isBackToInputStudentFragment == true){
-            // 필요한 작업을 한다.
-            filterStudentGender = ValueClass.VALUE_ALL
-            filterStudentType = ValueClass.VALUE_ALL
-            filterStudentGrade = ValueClass.VALUE_ALL
-
-            isBackToInputStudentFragment = false
-        }
 
         // 툴바를 구성하는 메서드를 호출한다.
         settingToolbarStudentList()
@@ -118,66 +93,7 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
             builder.setTitle("검색 필터 설정")
             val dialogStudentListFilterBinding = DialogStudentListFilterBinding.inflate(layoutInflater)
             builder.setView(dialogStudentListFilterBinding.root)
-
-            // 필터 옵션들 설정
-            // 학년
-            val gradeStr = when(filterStudentGrade){
-                StudentGrade.STUDENT_GRADE_1.number -> "1학년"
-                StudentGrade.STUDENT_GRADE_2.number -> "2학년"
-                StudentGrade.STUDENT_GRADE_3.number -> "3학년"
-                else -> "전체"
-            }
-            val a1 = dialogStudentListFilterBinding.textFieldStudentListGrade.editText as MaterialAutoCompleteTextView
-            a1.setText(gradeStr, false)
-
-            // 운동부
-            val typeStr = when(filterStudentType){
-                StudentType.STUDENT_TYPE_BASKETBALL.number -> "농구부"
-                StudentType.STUDENT_TYPE_SOCCER.number -> "축구부"
-                StudentType.STUDENT_TYPE_BASEBALL.number -> "야구부"
-                else -> "전체"
-            }
-            val a2 = dialogStudentListFilterBinding.textFieldStudentListType.editText as MaterialAutoCompleteTextView
-            a2.setText(typeStr, false)
-
-            // 성별
-            when(filterStudentGender){
-                StudentGender.STUDENT_GENDER_MALE.number -> {
-                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderMale)
-                }
-                StudentGender.STUDENT_GENDER_FEMALE.number -> {
-                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderFemale)
-                }
-                else -> {
-                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderAll)
-                }
-            }
-
-            builder.setPositiveButton("설정완료"){ dialogInterface: DialogInterface, i: Int ->
-                // 현재 설정되어 있는 필터의 값을 변수에 담아준다.
-                // 학년
-                filterStudentGrade = when(dialogStudentListFilterBinding.textFieldStudentListGrade.editText?.text.toString()){
-                    "1학년" -> StudentGrade.STUDENT_GRADE_1.number
-                    "2학년" -> StudentGrade.STUDENT_GRADE_2.number
-                    "3학년" -> StudentGrade.STUDENT_GRADE_3.number
-                    else -> ValueClass.VALUE_ALL
-                }
-                // 운동부
-                filterStudentType = when(dialogStudentListFilterBinding.textFieldStudentListType.editText?.text.toString()){
-                    "농구부" -> StudentType.STUDENT_TYPE_BASKETBALL.number
-                    "축구부" -> StudentType.STUDENT_TYPE_SOCCER.number
-                    "야구부" -> StudentType.STUDENT_TYPE_BASEBALL.number
-                    else -> ValueClass.VALUE_ALL
-                }
-                // 성별
-                filterStudentGender = when(dialogStudentListFilterBinding.toggleStudentListGender.checkedButtonId){
-                    R.id.buttonGenderMale -> StudentGender.STUDENT_GENDER_MALE.number
-                    R.id.buttonGenderFemale -> StudentGender.STUDENT_GENDER_FEMALE.number
-                    else -> ValueClass.VALUE_ALL
-                }
-                // RecyclerView를 갱신한다.
-                refreshRecyclerView()
-            }
+            builder.setPositiveButton("설정완료", null)
             builder.setNegativeButton("취소", null)
             builder.show()
         }
@@ -188,7 +104,6 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
        fragmentStudentListBinding.apply {
            fabStudentList.setOnClickListener {
                // 학생 정보 입력 화면으로 이동한다.
-               isBackToInputStudentFragment = true
                mainFragment.replaceFragment(SubFragmentName.INPUT_STUDENT_FRAGMENT, true, true, null)
            }
        }
@@ -202,8 +117,6 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
                 StudentRepository.selectStudentDataAll(mainActivity)
             }
             studentList = work1.await()
-            // 데이터를 필터링한다.
-            filteringData()
             // RecyclerView를 갱신한다.
             fragmentStudentListBinding.recyclerViewStudentList.adapter?.notifyDataSetChanged()
         }
@@ -235,48 +148,6 @@ class StudentListFragment(val mainFragment: MainFragment) : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolderStudentList, position: Int) {
             holder.rowText1Binding.textViewRow.text = studentList[position].studentName
-        }
-    }
-
-    // 필터에 선택되어 있는 것만 남겨두는 메서드
-    fun filteringData(){
-        // 삭제할 객체를 담을 List
-        val removeData = mutableListOf<StudentModel>()
-        // 학년
-        if(filterStudentGrade != ValueClass.VALUE_ALL){
-            studentList.forEach {
-                // 필터에 설정되어 있는 학년이 아닌 경우..
-                if(it.studentGrade.number != filterStudentGrade){
-                    removeData.add(it)
-                }
-            }
-            // 객체들을 제거한다.
-            studentList.removeAll(removeData)
-        }
-
-        removeData.clear()
-
-        // 운동부
-        if(filterStudentType != ValueClass.VALUE_ALL){
-            studentList.forEach {
-                // 필터에 설정되어 있는 운동부가 아닌 경우..
-                if(it.studentType.number != filterStudentType){
-                    removeData.add(it)
-                }
-            }
-            studentList.removeAll(removeData)
-        }
-
-        removeData.clear()
-        // 성별
-        if(filterStudentGender != ValueClass.VALUE_ALL){
-            studentList.forEach {
-                // 필터에 설정되어 있는 성별이 아닌 경우..
-                if(it.studentGender.number != filterStudentGender){
-                    removeData.add(it)
-                }
-            }
-            studentList.removeAll(removeData)
         }
     }
 }

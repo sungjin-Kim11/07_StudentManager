@@ -33,10 +33,3 @@ fun numberToStudentGender(studentGender:Int) = when(studentGender){
     1 -> StudentGender.STUDENT_GENDER_MALE
     else -> StudentGender.STUDENT_GENDER_FEMALE
 }
-
-class ValueClass{
-    companion object{
-        // 전체를 의미하는 값
-        val VALUE_ALL = 0
-    }
-}
