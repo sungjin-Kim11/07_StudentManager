@@ -4555,3 +4555,592 @@ class StudentInfoFragment(val mainFragment: MainFragment) : Fragment() {
         // 입력 요소를 설정하는 메서드
         settingTextField()
 ```
+
+---
+
+# 학사 일정 기능
+
+### PlannerFragment 를 생성한다.
+
+[fragment/PlannerFragment]
+```kt
+class PlannerFragment(val mainFragment: MainFragment) : Fragment() {
+    
+    lateinit var fragmentPlannerBinding: FragmentPlannerBinding
+    lateinit var mainActivity: MainActivity
+    
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentPlannerBinding = FragmentPlannerBinding.inflate(layoutInflater)
+        mainActivity = activity as MainActivity
+        return fragmentPlannerBinding.root
+    }
+
+}
+```
+
+### 프래그먼트의 이름을 정의한다.
+
+[fragment/MainFragment.kt - SubFragmentName]
+```kt
+    // 학사 일정 화면
+    PLANNER_FRAGMENT(8, "PlannerFragment"),
+```
+
+### 프래그먼트 객체를 생성한다.
+
+[fragment/MainFragment.kt - replaceFragment()]
+```kt
+            // 학사 일정 화면
+            SubFragmentName.PLANNER_FRAGMENT -> PlannerFragment(this)
+```
+
+### 프래그먼트를 변경하는 코드를 작성한다.
+
+[fragment/MainFragment.kt - settingNavigationViewMain()]
+```kt
+                    R.id.navigation_main_menu_calendar -> {
+                        replaceFragment(SubFragmentName.PLANNER_FRAGMENT, false, false, null)
+                    }
+```
+
+### 화면을 구성한다.
+
+[res/layout/fragment_planner.xml]
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="true"
+    tools:context=".fragment.PlannerFragment" >
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarPlanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerViewPlanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
+```
+
+### 툴바의 메뉴를 구성한다.
+
+[res/menu/planner_main_menu.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/planner_menu_add"
+        android:icon="@drawable/add_24px"
+        android:title="일정추가"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/planner_menu_list"
+        android:icon="@drawable/list_alt_24px"
+        android:title="목록"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/planner_menu_calendar"
+        android:icon="@drawable/calendar_month_24px"
+        android:title="달력"
+        app:showAsAction="always" />
+</menu>
+```
+
+### 학사 일정 모드를 나타내는 값을 정의한다.
+
+[fragment/PlannerFragment.kt]
+```kt
+// 학사 일정 모드
+enum class PlannerMode(val number:Int, var str:String){
+    PLANNER_MODE_LIST(1, "PlannerModeList"),
+    PLANNER_MODE_CALENDAR(2, "PlannerModelCalendar")
+}
+```
+
+### 학사 일정 모드를 담을 변수를 정의해준다.
+
+[fragment/PlannerFragment.kt]
+```kt
+    // Planner Mode 값을 담을 변수
+    var plannerMode = PlannerMode.PLANNER_MODE_LIST
+```
+
+### 메뉴의 보이지는 것을 설정하는 메서드를 만든다.
+[fragment/PlannerFragment.kt]
+```kt
+    // 학사 일정 모드에 따라 메뉴 노출을 설정하는 메서드
+    fun settingMenuItemVisible(){
+        fragmentPlannerBinding.apply {
+            // 학사 일정 모드에 따라 메뉴를 숨긴다.
+            val item1 = toolbarPlanner.menu.findItem(R.id.planner_menu_calendar)
+            val item2 = toolbarPlanner.menu.findItem(R.id.planner_menu_list)
+            when(plannerMode){
+                PlannerMode.PLANNER_MODE_LIST -> {
+                    item1.isVisible = true
+                    item2.isVisible = false
+                }
+                PlannerMode.PLANNER_MODE_CALENDAR -> {
+                    item1.isVisible = false
+                    item2.isVisible = true
+                }
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+[fragment/PlannerFragment.kt - settingToolbar()]
+```kt
+            settingMenuItemVisible()
+```
+
+### 툴바의 메뉴를 눌렀을 때를 구현해준다.
+[fragment/PlannerFragment.kt - settingToolbar()]
+
+```kt
+            toolbarPlanner.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.planner_menu_add -> {
+
+                    }
+                    R.id.planner_menu_list -> {
+                        plannerMode = PlannerMode.PLANNER_MODE_LIST
+                        settingMenuItemVisible()
+                    }
+                    R.id.planner_menu_calendar -> {
+                        plannerMode = PlannerMode.PLANNER_MODE_CALENDAR
+                        settingMenuItemVisible()
+                    }
+                }
+
+                true
+            }
+```
+
+### 프래그먼트를 만든다.
+
+[fragment/PlannerListFragment.kt]
+```kt
+class PlannerListFragment(val mainFragment: MainFragment) : Fragment() {
+
+
+    lateinit var fragmentPlannerListBinding: FragmentPlannerListBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentPlannerListBinding = FragmentPlannerListBinding.inflate(layoutInflater)
+        mainActivity = activity as MainActivity
+
+        return fragmentPlannerListBinding.root
+    }
+
+}
+```
+
+[fragment/PlannerCalendarFragment.kt]
+
+```kt
+class PlannerCalendarFragment(val mainFragment: MainFragment) : Fragment() {
+
+    lateinit var fragmentPlannerCalendarBinding: FragmentPlannerCalendarBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentPlannerCalendarBinding = FragmentPlannerCalendarBinding.inflate(layoutInflater)
+        mainActivity = activity as MainActivity
+
+        return fragmentPlannerCalendarBinding.root
+    }
+
+}
+```
+
+### Fragment를 교체하는 메서드를 구현한다.
+
+[fragment/PlannerFragment.kt]
+```kt
+    fun changePlannerSubFragment(){
+        when(plannerMode){
+            PlannerMode.PLANNER_MODE_LIST -> {
+                mainActivity.supportFragmentManager.commit {
+                    replace(R.id.fragmentContainerViewPlanner, PlannerListFragment(mainFragment))
+                }
+            }
+            PlannerMode.PLANNER_MODE_CALENDAR -> {
+                mainActivity.supportFragmentManager.commit {
+                    replace(R.id.fragmentContainerViewPlanner, PlannerCalendarFragment(mainFragment))
+                }
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+[fragment/PlannerFragment.kt - onCreateView()]
+```kt
+changePlannerSubFragment()
+```
+
+### 메뉴를 눌렀을 때도 호출해준다.
+[fragment/PlannerFragment.kt - settingToolbar()]
+```kt
+R.id.planner_menu_list -> {
+    plannerMode = PlannerMode.PLANNER_MODE_LIST
+    settingMenuItemVisible()
+    changePlannerSubFragment()
+}
+R.id.planner_menu_calendar -> {
+    plannerMode = PlannerMode.PLANNER_MODE_CALENDAR
+    settingMenuItemVisible()
+    changePlannerSubFragment()
+}
+```
+
+### PlannerListFragment의 화면을 구성해준다.
+
+[res/layout/fragment_planner_list.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.PlannerListFragment" >
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPlannerList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
+```
+
+### 항목으로 사용할 레이아웃을 구성해준다.
+
+[res/layout/row_text2.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/textViewRowText2MainTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <TextView
+        android:id="@+id/textViewRowText2SubTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="TextView" />
+</LinearLayout>
+```
+
+### RecyclerView 구성을 위한 임시 데이터를 정의한다.
+[fragment/PlannerListFragment.kt]
+```kt
+    // RecyclerView 구성을 위한 임시 데이터
+    val tempMainTitleData = Array(50){
+        "학사 일정 이름 $it"
+    }
+
+    val tempSubTitleData = Array(50){
+        "2024-11-${it + 1}"
+    }
+```
+
+### RecyclerView의 어뎁터를 작성한다.
+
+[fragment/PlannerListFragment.kt]
+```kt
+    // RecyclerView의 어뎁터
+    inner class RecyclerViewPlannerListAdapter : RecyclerView.Adapter<RecyclerViewPlannerListAdapter.ViewHolderPlannerList>(){
+        // View Holder
+        inner class ViewHolderPlannerList(val rowText2Binding: RowText2Binding) : RecyclerView.ViewHolder(rowText2Binding.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderPlannerList {
+            val rowText2Binding = RowText2Binding.inflate(layoutInflater, parent, false)
+            val viewHolderPlannerList = ViewHolderPlannerList(rowText2Binding)
+            return viewHolderPlannerList
+        }
+
+        override fun getItemCount(): Int {
+            return tempMainTitleData.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolderPlannerList, position: Int) {
+            holder.rowText2Binding.textViewRowText2MainTitle.text = tempMainTitleData[position]
+            holder.rowText2Binding.textViewRowText2SubTitle.text = tempSubTitleData[position]
+        }
+    }
+```
+
+### RecyclerView를 구성하는 메서드를 구현한다.
+
+[fragment/PlannerListFragment.kt]
+```kt
+    // RecyclerView를 구성하는 메서드
+    fun settingRecyclerView(){
+        fragmentPlannerListBinding.apply {
+            recyclerViewPlannerList.adapter = RecyclerViewPlannerListAdapter()
+            recyclerViewPlannerList.layoutManager = LinearLayoutManager(mainActivity)
+            val deco = MaterialDividerItemDecoration(mainActivity, MaterialDividerItemDecoration.VERTICAL)
+            recyclerViewPlannerList.addItemDecoration(deco)
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/PlannerListFragment.kt - onCreateView()]
+```kt
+        // RecyclerView를 구성하는 메서드를 호출한다.
+        settingRecyclerView()
+```
+
+### BottomSheet로 사용할 레이아웃을 구성한다.
+
+[res/layout/bottom_sheet_menu_planner_list.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/buttonBottomSheetPlannerListModify"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="수정" />
+
+    <Button
+        android:id="@+id/buttonBottomSheetPlannerListDelete"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="삭제" />
+
+</LinearLayout>
+```
+
+### BottomSheet를 구성하는 메서드를 구현한다.
+[fragment/PlannerListFragment.kt]
+```kt
+    // 수정 삭제를 선택하기 위한 BottomSheet를 띄우는 메서드
+    fun showMenuBottomSheet(){
+        // BottomSheetDialog 사용
+        val bottomSheetMenuPlannerListBinding = BottomSheetMenuPlannerListBinding.inflate(layoutInflater)
+        val bottomSheetDialog = BottomSheetDialog(mainActivity)
+        bottomSheetDialog.setContentView(bottomSheetMenuPlannerListBinding.root)
+
+        // BottomSheetDialog를 띄운다.
+        bottomSheetDialog.show()
+    }
+```
+
+### Adapter에 LongClick 리스너를 구현해준다.
+
+[fragment/PlannerListFragment.kt]
+```kt
+        inner class ViewHolderPlannerList(val rowText2Binding: RowText2Binding) : RecyclerView.ViewHolder(rowText2Binding.root), OnLongClickListener{
+            override fun onLongClick(v: View?): Boolean {
+                // BottomSheet를 띄워준다
+                showMenuBottomSheet()
+                return false
+            }
+        }
+        
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderPlannerList {
+            val rowText2Binding = RowText2Binding.inflate(layoutInflater, parent, false)
+            val viewHolderPlannerList = ViewHolderPlannerList(rowText2Binding)
+            rowText2Binding.root.setOnLongClickListener(viewHolderPlannerList)
+            return viewHolderPlannerList
+        }
+```
+
+### BottomSheet 구성을 위한 Fragment를 생성한다.
+
+[fragment/BottomSheetPlannerListModify.kt]
+
+```kt
+
+class BottomSheetPlannerListModify(val plannerListFragment: PlannerListFragment) : BottomSheetDialogFragment() {
+
+    lateinit var bottomSheetPlannerListModifyBinding: FragmentBottomSheetPlannerListModifyBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        bottomSheetPlannerListModifyBinding = FragmentBottomSheetPlannerListModifyBinding.inflate(layoutInflater)
+        mainActivity = activity as MainActivity
+
+        return bottomSheetPlannerListModifyBinding.root
+    }
+}
+```
+
+### 화면을 구성한다.
+
+[res/layout/fragment_bottom_sheet_planner_list_modify.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    tools:context=".fragment.BottomSheetPlannerListModify" >
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textFieldBottomSheetPlannerModifyContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="학사 일정"
+        app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text=" " />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonBottomSheetPlannerModifyDate"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="날짜 선택" />
+</LinearLayout>
+```
+
+### 수정 버튼을 눌렀을 때 BottomSheet가 나오도록 한다.
+
+[fragment/PlannerListFragment.kt - showMenuBottomSheet()]
+```kt
+        bottomSheetMenuPlannerListBinding.buttonBottomSheetPlannerListModify.setOnClickListener {
+
+            bottomSheetDialog.setOnDismissListener {
+                // 수정을 위한 BottomSheet를 띄운다.
+                val bottomSheetPlannerListModify =  BottomSheetPlannerListModify(this)
+                bottomSheetPlannerListModify.show(mainActivity.supportFragmentManager, "list modify")
+            }
+
+            bottomSheetDialog.dismiss()
+        }
+```
+
+### 삭제 버튼을 눌렀을 때 삭제 여부를 묻는 다이얼로그를 띄워준다.
+
+[fragment/PlannerListFragment.kt - showMenuBottomSheet()]
+```kt
+        bottomSheetMenuPlannerListBinding.buttonBottomSheetPlannerListDelete.setOnClickListener {
+
+            bottomSheetDialog.setOnDismissListener {
+                val builder = MaterialAlertDialogBuilder(mainActivity)
+                builder.setTitle("일정 삭제")
+                builder.setMessage("삭제할 경우 복구가 불가능합니다")
+                builder.setNegativeButton("취소", null)
+                builder.setPositiveButton("확인", null)
+                builder.show()
+            }
+
+            bottomSheetDialog.dismiss()
+        }
+```
+
+### 달력을 보여주는 화면 구성을 위해 라이브러리를 셋팅한다.
+
+- https://github.com/prolificinteractive/material-calendarview/tree/master
+
+- settings.gradle.kts 파일에 Repository 정보를 작성해준다.
+
+```kt
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        ...
+        maven {
+            url = uri("https://jitpack.io")
+        }
+    }
+}
+
+```
+
+- build.gradle.kts에 라이브러리를 설정한다.
+
+```kt
+     implementation("com.github.prolificinteractive:material-calendarview:2.0.0")
+```
+
+- gradle.properties 에 다음 코드를 작성해준다.
+
+```kt
+android.enableJetifier=true
+```
+
+### 화면을 구성한다.
+
+[res/layout/fragment_planner_calendar.xml]
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.PlannerCalendarFragment" >
+
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/materialCalendarViewPlanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+    </com.prolificinteractive.materialcalendarview.MaterialCalendarView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPlannerCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp" />
+</LinearLayout>
+```

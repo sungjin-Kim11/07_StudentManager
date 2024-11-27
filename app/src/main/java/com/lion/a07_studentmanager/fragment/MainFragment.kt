@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import com.lion.a07_studentmanager.MainActivity
@@ -56,7 +57,9 @@ class MainFragment : Fragment() {
                     R.id.navigation_main_menu_student_data -> {
                         replaceFragment(SubFragmentName.STUDENT_INFO_FRAGMENT, false, false, null)
                     }
-                    R.id.navigation_main_menu_calendar -> Log.d("test100", "학사일정")
+                    R.id.navigation_main_menu_calendar -> {
+                        replaceFragment(SubFragmentName.PLANNER_FRAGMENT, false, false, null)
+                    }
                     R.id.navigation_main_menu_setting_manager -> Log.d("test100", "관리자설정")
                 }
 
@@ -84,6 +87,8 @@ class MainFragment : Fragment() {
             SubFragmentName.STUDENT_POINT_FRAGMENT -> StudentPointFragment(this)
             // 학생 통계 화면
             SubFragmentName.STUDENT_INFO_FRAGMENT -> StudentInfoFragment(this)
+            // 학사 일정 화면
+            SubFragmentName.PLANNER_FRAGMENT -> PlannerFragment(this)
         }
 
         // bundle 객체가 null이 아니라면
@@ -130,4 +135,6 @@ enum class SubFragmentName(val number:Int, val str:String){
     STUDENT_POINT_FRAGMENT(6, "StudentPointFragment"),
     // 학생 통계 화면
     STUDENT_INFO_FRAGMENT(7, "StudentInfoFragment"),
+    // 학사 일정 화면
+    PLANNER_FRAGMENT(8, "PlannerFragment"),
 }

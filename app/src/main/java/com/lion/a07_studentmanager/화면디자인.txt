@@ -974,3 +974,95 @@ LinearLayout
                     - enabled : false
                     - textColor : #000000
                     - singleLine : true
+
+[res/layout/fragment_planner.xml]
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id : toolbarPlanner
+        - background : transparent
+
+    FragmentContainerView
+        - id : fragmentContainerViewPlanner
+
+[res/layout/fragment_planner_list.xml]
+LinearLayout
+    - orientation : vertical
+
+    RecyclerView
+        - id : recyclerViewPlannerList
+
+[res/layout/row_text2.xml]
+LinearLayout
+    - orientation : vertical
+    - padding : 10dp
+    - layout_height : wrap_content
+
+    TextView
+        - id : textViewRowText2MainTitle
+        - textAppearance : Large
+
+    TextView
+        - id : textViewRowText2SubTitle
+        - layout_marinTop : 10dp
+
+[res/layout/bottom_sheet_menu_planner_list.xml]
+
+LinearLayout
+    - orientation : vertical
+    - paddingStart : 10dp
+    - paddingEnd : 10dp
+
+    Button
+        - id : buttonBottomSheetPlannerListModify
+        - text : 수정
+        - style : textButton
+
+    Button
+        - id : buttonBottomSheetPlannerListDelete
+        - text : 삭제
+        - style : textButton
+        - layout_marginTop : 10dp
+
+[res/layout/fragment_bottom_sheet_planner_list_modify.xml]
+
+LinearLayout
+    - orientation : vertical
+    - paddingStart : 10dp
+    - paddingEnd : 10dp
+
+    BottomSheetDragHandleView
+
+    TextInputLayout
+        - id : textFieldBottomSheetPlannerModifyContent
+        - hint : 학사 일정
+        - endIconMode : clear_text
+        - layout_height : wrap_content
+
+        TextInputEditText
+            - hint : 삭제
+            - singleLine : true
+            - text : " "
+
+    Button
+        - id : buttonBottomSheetPlannerModifyDate
+        - text : 날짜 선택
+        - style : OutlinedButton
+
+[res/layout/fragment_planner_calendar.xml]
+
+LinearLayout
+    - orientation : vertical
+
+    MaterialCalendarView
+        - id : materialCalendarViewPlanner
+        - layout_height : wrap_content
+
+    RecyclerView
+        - id : recyclerViewPlannerCalendar
+        - layout_marginTop : 10dp
+
+
+

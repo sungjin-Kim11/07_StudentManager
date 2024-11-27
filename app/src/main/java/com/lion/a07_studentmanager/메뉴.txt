@@ -63,4 +63,21 @@ Menu
         - title : 검색
         - showAsAction : always
 
+[res/menu/planner_main_menu.xml]
+
+Menu
+
+    MenuItem
+        - id : planner_menu_list
+        - icon : list_alt_24px
+        - title : 목록
+        - showAsAction : always
+
+    MenuItem
+        - id : planner_menu_calendar
+        - icon : calendar_month_24px
+        - title : 달력
+        - showAsAction : always
+
+
 
