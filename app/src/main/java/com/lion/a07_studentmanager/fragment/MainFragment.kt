@@ -47,12 +47,20 @@ class MainFragment : Fragment() {
                 // 메뉴 id로 분기한다
                 when(it.itemId){
                     // 학생목록
-                    R.id.navigation_main_menu_student_list -> Log.d("test100", "학생목록")
-                    R.id.navigation_main_menu_student_point -> Log.d("test100", "학생성적")
-                    R.id.navigation_main_menu_student_data -> Log.d("test100", "학생통계")
+                    R.id.navigation_main_menu_student_list -> {
+                        replaceFragment(SubFragmentName.STUDENT_LIST_FRAGMENT, false,  false, null)
+                    }
+                    R.id.navigation_main_menu_student_point -> {
+                        replaceFragment(SubFragmentName.STUDENT_POINT_FRAGMENT, false, false, null)
+                    }
+                    R.id.navigation_main_menu_student_data -> {
+                        replaceFragment(SubFragmentName.STUDENT_INFO_FRAGMENT, false, false, null)
+                    }
                     R.id.navigation_main_menu_calendar -> Log.d("test100", "학사일정")
                     R.id.navigation_main_menu_setting_manager -> Log.d("test100", "관리자설정")
                 }
+
+                drawerLayoutMain.close()
                 true
             }
         }
@@ -72,6 +80,10 @@ class MainFragment : Fragment() {
             SubFragmentName.MODIFY_STUDENT_FRAGMENT ->  ModifyStudentFragment(this)
             // 학생 정보 입력 화면
             SubFragmentName.INPUT_STUDENT_FRAGMENT -> InputStudentFragment(this)
+            // 학생 성적 화면
+            SubFragmentName.STUDENT_POINT_FRAGMENT -> StudentPointFragment(this)
+            // 학생 통계 화면
+            SubFragmentName.STUDENT_INFO_FRAGMENT -> StudentInfoFragment(this)
         }
 
         // bundle 객체가 null이 아니라면
@@ -114,4 +126,8 @@ enum class SubFragmentName(val number:Int, val str:String){
     MODIFY_STUDENT_FRAGMENT(4, "ModifyStudentFragment"),
     // 학생 정보 입력 화면
     INPUT_STUDENT_FRAGMENT(5, "InputStudentFragment"),
+    // 학생 성적 화면
+    STUDENT_POINT_FRAGMENT(6, "StudentPointFragment"),
+    // 학생 통계 화면
+    STUDENT_INFO_FRAGMENT(7, "StudentInfoFragment"),
 }

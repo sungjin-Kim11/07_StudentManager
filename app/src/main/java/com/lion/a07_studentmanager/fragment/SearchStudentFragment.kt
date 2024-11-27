@@ -13,6 +13,12 @@ import com.lion.a07_studentmanager.MainActivity
 import com.lion.a07_studentmanager.R
 import com.lion.a07_studentmanager.databinding.FragmentSearchStudentBinding
 import com.lion.a07_studentmanager.databinding.RowText1Binding
+import com.lion.a07_studentmanager.repository.StudentRepository
+import com.lion.a07_studentmanager.viewmodel.StudentModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class SearchStudentFragment(val mainFragment: MainFragment) : Fragment() {
 
@@ -20,9 +26,12 @@ class SearchStudentFragment(val mainFragment: MainFragment) : Fragment() {
     lateinit var mainActivity: MainActivity
 
     // 리사이클러 뷰 구성을 위한 임시 데이터
-    val tempData = Array(100){
-        "학생 ${it + 1}"
-    }
+//    val tempData = Array(100){
+//        "학생 ${it + 1}"
+//    }
+
+    // 리사클리어뷰 구성을 위한 리스트
+    var studentList = mutableListOf<StudentModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fragmentSearchStudentBinding = FragmentSearchStudentBinding.inflate(inflater)
@@ -32,6 +41,9 @@ class SearchStudentFragment(val mainFragment: MainFragment) : Fragment() {
         settingToolbarSearchStudent()
         // recyclerView를 구성하는 메서드
         settingRecyclerViewSearchStudent()
+        // 입력 요소 설정 메서드를 호출한다.
+        settingTextField()
+
 
         return fragmentSearchStudentBinding.root
     }
@@ -63,7 +75,11 @@ class SearchStudentFragment(val mainFragment: MainFragment) : Fragment() {
         inner class ViewHolderStudentSearch(val rowText1Binding: RowText1Binding) : RecyclerView.ViewHolder(rowText1Binding.root), OnClickListener{
             override fun onClick(v: View?) {
                 // 학생 정보를 보는 화면으로 이동한다.
-                mainFragment.replaceFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT, true, true, null)
+                val dataBundle = Bundle()
+                dataBundle.putInt("studentIdx", studentList[adapterPosition].studentIdx)
+
+                mainFragment.replaceFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT,
+                    true, true, dataBundle)
             }
         }
 
@@ -75,11 +91,33 @@ class SearchStudentFragment(val mainFragment: MainFragment) : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return tempData.size
+            return studentList.size
         }
 
         override fun onBindViewHolder(holder: ViewHolderStudentSearch, position: Int) {
-            holder.rowText1Binding.textViewRow.text = tempData[position]
+            holder.rowText1Binding.textViewRow.text = studentList[position].studentName
+        }
+    }
+
+    // 입력 요소 설정
+    fun settingTextField(){
+        fragmentSearchStudentBinding.apply {
+            // 검색창에 포커스를 준다.
+            mainActivity.showSoftInput(textFieldSearchStudentName.editText!!)
+            // 키보드의 엔터를 누르면 동작하는 리스너
+            textFieldSearchStudentName.editText?.setOnEditorActionListener { v, actionId, event ->
+                // 검색 데이터를 가져와 보여준다.
+                CoroutineScope(Dispatchers.Main).launch {
+                    val work1 = async(Dispatchers.IO){
+                        val keyword = textFieldSearchStudentName.editText?.text.toString()
+                        StudentRepository.selectStudentDataAllByStudentName(mainActivity, keyword)
+                    }
+                    studentList = work1.await()
+                    recyclerViewSearchStudent.adapter?.notifyDataSetChanged()
+                }
+                mainActivity.hideSoftInput()
+                true
+            }
         }
     }
 }

@@ -683,3 +683,294 @@ LinearLayout
                 - hint : 삭제
                 - singleLine : true
                 - inputType : number
+
+[res/layout/fragment_student_point.xml]
+
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id : toolbarStudentPoint
+        - background : transparent
+
+    LinearLayout
+        - orientation : vertical
+
+        TabLayout
+            - id : tabLayoutStudentPoint
+            - tabMode : auto
+            - layout_height : wrap_content
+
+            TabItem
+                - text : 국어점수
+
+            TabItem
+                - text : 영어점수
+
+            TabItem
+                - text : 수학점수
+
+            TabItem
+                - text : 총점
+
+            TebItem
+                - text : 평균
+
+        ViewPager2
+            - id : viewPagerStudentPoint
+
+[res/layout/fragment_student_point_sub.xml]
+
+LinearLayout
+    - orientation : vertical
+
+    Chip
+        - id : chipStudentPointOrdering
+        - style : Assist
+        - text : 오름차순 △
+        - layout_margin : 10dp
+        - layout_width : wrap_content
+
+    RecyclerView
+        - id : recyclerViewStudentPoint
+
+[res/layout/fragment_student_info.xml]
+
+LinearLayout
+    - orientation : vertical
+    - transitionGroup : true
+
+    MaterialToolbar
+        - id toolbarStudentInfo
+        - background : transparent
+
+    ScrollView
+
+        LinearLayout
+            - orientation : vertical
+            - padding : 10dp
+
+            TextInputLayout
+                - id : textFieldStudentInfoTotalCount
+                - startIconDrawable : 아무거나
+                - hint : 전체 학생의 수
+                - layout_height : wrap_content
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            MaterialDivider
+                - layout_marginTop : 10dp
+
+            TextInputLayout
+                - id : textFieldStudentInfoGradeOneCount
+                - startIconDrawable : 아무거나
+                - hint : 1학년의 수
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoGradeTwoCount
+                - startIconDrawable : 아무거나
+                - hint : 2학년의 수
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoGradeThreeCount
+                - startIconDrawable : 아무거나
+                - hint : 3학년의 수
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            MaterialDivider
+                - layout_marginTop : 10dp
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeBaseBallCount
+                - startIconDrawable : 아무거나
+                - hint : 야구부의 수
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeSoccerCount
+                - startIconDrawable : 아무거나
+                - hint : 축구부의 수
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeBasketBallCount
+                - startIconDrawable : 아무거나
+                - hint : 농구부의 수
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            MaterialDivider
+                - layout_marginTop : 10dp
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeKoreanTotal
+                - startIconDrawable : 아무거나
+                - hint : 국어 총점
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeEnglishTotal
+                - startIconDrawable : 아무거나
+                - hint : 영어 총점
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeMathTotal
+                - startIconDrawable : 아무거나
+                - hint : 수학 총점
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            MaterialDivider
+                - layout_marginTop : 10dp
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeKoreanAvg
+                - startIconDrawable : 아무거나
+                - hint : 국어 평균
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeEnglishAvg
+                - startIconDrawable : 아무거나
+                - hint : 영어 평균
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeMathAvg
+                - startIconDrawable : 아무거나
+                - hint : 수학 평균
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            MaterialDivider
+                - layout_marginTop : 10dp
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeTotalAll
+                - startIconDrawable : 아무거나
+                - hint : 전체 총점
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true
+
+            TextInputLayout
+                - id : textFieldStudentInfoTypeAvgAll
+                - startIconDrawable : 아무거나
+                - hint : 전체 평균
+                - layout_height : wrap_content
+                - layout_marginTop : 10dp
+
+                TextInputEditText
+                    - hint : 삭제
+                    - text : " "
+                    - enabled : false
+                    - textColor : #000000
+                    - singleLine : true

@@ -3179,3 +3179,1379 @@ class StudentRepository {
         // 버튼을 구성하는 메서드를 호출한다.
         settingButton()
 ```
+
+---
+
+# 필터 기능 구현
+
+### 전체를 의미하는 값을 정의한다.
+
+[tools/Value.kt]
+
+```kt
+class ValueClass{
+    companion object{
+        // 전체를 의미하는 값
+        val VALUE_ALL = 0
+    }
+}
+```
+
+### 필터 값을 담을 변수를 선언한다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // 필터 값
+    var filterStudentGrade = ValueClass.VALUE_ALL
+    var filterStudentType = ValueClass.VALUE_ALL
+    var filterStudentGender = ValueClass.VALUE_ALL
+```
+
+### 다이얼로그의 필터 옵션들을 설정하는 코드를 작성한다.
+
+[fragment/StudentListFragment.kt - showFilterDialog]
+```kt
+            // 필터 옵션들 설정
+            // 학년
+            val gradeStr = when(filterStudentGrade){
+                StudentGrade.STUDENT_GRADE_1.number -> "1학년"
+                StudentGrade.STUDENT_GRADE_2.number -> "2학년"
+                StudentGrade.STUDENT_GRADE_3.number -> "3학년"
+                else -> "전체"
+            }
+            val a1 = dialogStudentListFilterBinding.textFieldStudentListGrade.editText as MaterialAutoCompleteTextView
+            a1.setText(gradeStr, false)
+            
+            // 운동부
+            val typeStr = when(filterStudentType){
+                StudentType.STUDENT_TYPE_BASKETBALL.number -> "농구부"
+                StudentType.STUDENT_TYPE_SOCCER.number -> "축구부"
+                StudentType.STUDENT_TYPE_BASEBALL.number -> "야구부"
+                else -> "전체"
+            }
+            val a2 = dialogStudentListFilterBinding.textFieldStudentListType.editText as MaterialAutoCompleteTextView
+            a2.setText(typeStr, false)
+
+            // 성별
+            when(filterStudentGender){
+                StudentGender.STUDENT_GENDER_MALE.number -> {
+                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderMale)
+                }
+                StudentGender.STUDENT_GENDER_FEMALE.number -> {
+                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderFemale)
+                }
+                else -> {
+                    dialogStudentListFilterBinding.toggleStudentListGender.check(R.id.buttonGenderAll)
+                }
+            }
+```
+
+### 다이얼로그의 확인 버튼을 누르면 선택한 옵션의 값을 변수에 담아준다.
+
+[fragment/StudentListFragment.kt - showFilterDialog]
+```kt
+            builder.setPositiveButton("설정완료"){ dialogInterface: DialogInterface, i: Int ->
+                // 현재 설정되어 있는 필터의 값을 변수에 담아준다.
+                // 학년
+                filterStudentGrade = when(dialogStudentListFilterBinding.textFieldStudentListGrade.editText?.text.toString()){
+                    "1학년" -> StudentGrade.STUDENT_GRADE_1.number
+                    "2학년" -> StudentGrade.STUDENT_GRADE_2.number
+                    "3학년" -> StudentGrade.STUDENT_GRADE_3.number
+                    else -> ValueClass.VALUE_ALL
+                }
+                // 운동부
+                filterStudentType = when(dialogStudentListFilterBinding.textFieldStudentListType.editText?.text.toString()){
+                    "농구부" -> StudentType.STUDENT_TYPE_BASKETBALL.number
+                    "축구부" -> StudentType.STUDENT_TYPE_SOCCER.number
+                    "야구부" -> StudentType.STUDENT_TYPE_BASEBALL.number
+                    else -> ValueClass.VALUE_ALL
+                }
+                // 성별
+                filterStudentGender = when(dialogStudentListFilterBinding.toggleStudentListGender.checkedButtonId){
+                    R.id.buttonGenderMale -> StudentGender.STUDENT_GENDER_MALE.number
+                    R.id.buttonGenderFemale -> StudentGender.STUDENT_GENDER_FEMALE.number
+                    else -> ValueClass.VALUE_ALL
+                }
+            }
+```
+
+### 데이터를 필터링하는 메서드를 구현한다.
+
+[fragment/StudentRepository.kt]
+```kt
+    // 필터에 선택되어 있는 것만 남겨두는 메서드
+    fun filteringData(){
+        // 삭제할 객체를 담을 List
+        val removeData = mutableListOf<StudentModel>()
+        // 학년
+        if(filterStudentGrade != ValueClass.VALUE_ALL){
+            studentList.forEach {
+                // 필터에 설정되어 있는 학년이 아닌 경우..
+                if(it.studentGrade.number != filterStudentGrade){
+                    removeData.add(it)
+                }
+            }
+            // 객체들을 제거한다.
+            studentList.removeAll(removeData)
+        }
+
+        removeData.clear()
+
+        // 운동부
+        if(filterStudentType != ValueClass.VALUE_ALL){
+            studentList.forEach {
+                // 필터에 설정되어 있는 운동부가 아닌 경우..
+                if(it.studentType.number != filterStudentType){
+                    removeData.add(it)
+                }
+            }
+            studentList.removeAll(removeData)
+        }
+
+        removeData.clear()
+        // 성별
+        if(filterStudentGender != ValueClass.VALUE_ALL){
+            studentList.forEach {
+                // 필터에 설정되어 있는 성별이 아닌 경우..
+                if(it.studentGender.number != filterStudentGender){
+                    removeData.add(it)
+                }
+            }
+            studentList.removeAll(removeData)
+        }
+    }
+```
+
+### Recyclerview를 갱신하는 메서드에서 메서드를 호출해준다.
+
+[fragment/StudentRepository.kt - refreshRecyclerView()]
+```kt
+                // 데이터를 필터링한다
+                filteringData()
+```
+
+### RecyclerVioew를 갱신하는 메서드를 호출한다.
+
+[fragment/StudnetRepository.kt - showFilterDialog()]
+
+```kt
+                // RecyclerView를 갱신한다.
+                refreshRecyclerView()
+```
+
+---
+
+# 만약 학생 정보를 새롭게 등록하고 돌아왔을 경우 필터를 초기화 하고 싶다면..
+- 만약 유지하고 싶다면 이 작업은 하지 마세요~~
+- 이 작업은 다른 프래그먼트를 갔다 돌아왔을 경우 무언가 작업을 해야할 경우를 예시로 하는 작업이다.
+- 만약 Activity 였다면 ActivityResultLauncher를 이용하면 된다.
+- 하지만 Fragment는 다른 Fragment를 갔다 돌아왔을 경우에 어떤 Fragment에서 돌아왔는지를 구분할 수 없다.
+- 이에 변수를 정의해서 어떤 Fragment를 갔다 왔는지를 구분해줘야 한다.
+
+### 학생 정보 입력 화면에서 돌아온 것인지를 구분하는 변수를 정의해준다.
+
+[fragment/StudentListFragment.kt]
+```kt
+    // InputStudenFragment 를 갔다 왔는지 구분하기 위한 변수
+    var isBackToInputStudentFragment = false
+```
+
+### 학생 정보 입력 화면으로 이동할 때 변수에 true를 넣어준다.
+
+[fragment/StudentListFragment.kt - settingFabStudentList()]
+```kt
+               isBackToInputStudentFragment = true
+```
+
+### onCreateView에서 갔다 돌아왔을 때를 처리해준다.
+
+[fragment/StudentListFragment.kt - onCreateView()]
+```kt
+        // InputStudentFragment에서 돌아온 경우라면
+        if(isBackToInputStudentFragment == true){
+            // 필요한 작업을 한다.
+            filterStudentGender = ValueClass.VALUE_ALL
+            filterStudentType = ValueClass.VALUE_ALL
+            filterStudentGrade = ValueClass.VALUE_ALL
+
+            isBackToInputStudentFragment = false
+        }
+```
+
+---
+
+# 검색
+
+### UI 작업할 때 빠진 부분을 부분을 작업한다
+
+[res/layout/fragment_search_student.xml]
+```xml
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+```
+
+### 검색어를 입력하는 요소에 포커스를 준다.
+
+[fragment/SearchStudentFragment.kt]
+```kt
+    // 입력 요소 설정
+    fun settingTextField(){
+        fragmentSearchStudentBinding.apply {
+            // 검색창에 포커스를 준다.
+            mainActivity.showSoftInput(textFieldSearchStudentName.editText!!)
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/SearchStudentFragment.kt - onCreateView()]
+```kt
+        // 입력 요소 설정 메서드를 호출한다.
+        settingTextField()
+```
+
+### 리사이클러뷰 구성을 위한 임시 데이터는 제거한다.
+
+[fragment/SearchStudentFragment.kt]
+```kt
+    // 리사이클러 뷰 구성을 위한 임시 데이터
+//    val tempData = Array(100){
+//        "학생 ${it + 1}"
+//    }
+```
+
+### 리사이클로 뷰 구성을 위한 리스트를 선언해준다.
+
+[fragment/SearchStudentFragment.kt]
+```kt
+    // 리사클리어뷰 구성을 위한 리스트
+    var studentList = mutableListOf<StudentModel>()
+```
+
+### 어뎁터를 수정한다.
+
+[fragment/SearchStudentFragment.kt - RecyclerViewStudentSearchAdapter]
+```kt
+        override fun getItemCount(): Int {
+            return studentList.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolderStudentSearch, position: Int) {
+            holder.rowText1Binding.textViewRow.text = studentList[position].studentName
+        }
+```
+
+### dao 에 데이터를 가져오기 위한 메서드를 정의한다.
+
+[database/StudentDao.kt]
+```kt
+    // where studentName = :studentName
+    // studentName 컬럼의 값이 지정된 값과 같은 행만 가져온다.
+    @Query("""
+        select * from StudentTable
+        where studentName = :studentName
+        order by studentIdx desc
+    """)
+    fun selectStudentDataAllByStudentName(studentName:String):List<StudentVO>
+```
+
+### Repsitory에 이름을 통해 검색하는 메서드를 구현한다.
+
+[repository/StudentRepository.kt]
+```kt
+        // 학생이름으로 검색하여 학생 데이터 전체를 가져오는 메서드
+        fun selectStudentDataAllByStudentName(context: Context, studentName:String) : MutableList<StudentModel>{
+            // 데이터를 가져온다.
+            val studentDataBase = StudentDataBase.getInstance(context)
+            val studentList = studentDataBase?.studentDao()?.selectStudentDataAllByStudentName(studentName)
+
+            // 학생 데이터를 담을 리스트
+            val tempList = mutableListOf<StudentModel>()
+
+            // 학생의 수 만큼 반복한다.
+            studentList?.forEach {
+                val studentModel = StudentModel(
+                    it.studentIdx, it.studentName, numberToStudentGrade(it.studentGrade),
+                    numberToStudentType(it.studentType), numberToStudentGender(it.studentGender),
+                    it.studentKorean, it.studentEnglish, it.studentMath
+                )
+                // 리스트에 담는다.
+                tempList.add(studentModel)
+            }
+            return tempList
+        }
+```
+
+### 키보드의 엔터키를 눌렀을 때 처리를 구현한다.
+
+[fragment/SearchStudentFragment.kt - settingTextField()]
+```kt
+            // 키보드의 엔터를 누르면 동작하는 리스너
+            textFieldSearchStudentName.editText?.setOnEditorActionListener { v, actionId, event ->
+                // 검색 데이터를 가져와 보여준다.
+                CoroutineScope(Dispatchers.Main).launch {
+                    val work1 = async(Dispatchers.IO){
+                        val keyword = textFieldSearchStudentName.editText?.text.toString()
+                        StudentRepository.selectStudentDataAllByStudentName(mainActivity, keyword)
+                    }
+                    studentList = work1.await()
+                    recyclerViewSearchStudent.adapter?.notifyDataSetChanged()
+                }
+                mainActivity.hideSoftInput()
+                true
+            }
+```
+
+### 항목을 눌렀을 때의 부분을 수정한다.
+
+[fragment/SearchStudentFragment.kt - RecyclerViewStudentSearchAdapter]
+```kt
+                // 학생 정보를 보는 화면으로 이동한다.
+                val dataBundle = Bundle()
+                dataBundle.putInt("studentIdx", studentList[adapterPosition].studentIdx)
+
+                mainFragment.replaceFragment(SubFragmentName.SHOW_STUDENT_FRAGMENT,
+                    true, true, dataBundle)
+```
+
+---
+
+# 학생 성적 기능 구현
+
+### StudentListFragment의 툴바에 네비게이션 메뉴를 배치한다.
+
+[fragment/StduentListFragment.kt - settingToolbarStudentList()]
+```kt
+            // 네비게이션 메뉴
+            toolbarStudentList.setNavigationIcon(R.drawable.menu_24px)
+            toolbarStudentList.setNavigationOnClickListener {
+                // 네비게이션 뷰를 보여준다.
+                mainFragment.fragmentMainBinding.drawerLayoutMain.open()
+            }
+```
+
+
+### NavigationView의 메뉴를 눌렀을 때를 구현한다.
+
+[fragment/MainFragment.kt - settingNavigationViewMain()]
+```kt
+                // 메뉴 id로 분기한다
+                when(it.itemId){
+                    // 학생목록
+                    R.id.navigation_main_menu_student_list -> {
+                        replaceFragment(SubFragmentName.STUDENT_LIST_FRAGMENT, false,  false, null)
+                    }
+                    R.id.navigation_main_menu_student_point -> Log.d("test100", "학생성적")
+                    R.id.navigation_main_menu_student_data -> Log.d("test100", "학생통계")
+                    R.id.navigation_main_menu_calendar -> Log.d("test100", "학사일정")
+                    R.id.navigation_main_menu_setting_manager -> Log.d("test100", "관리자설정")
+                }
+
+                drawerLayoutMain.close()
+```
+
+### 학생 성적 프래그먼트를 만들어준다.
+
+[fragment/StudentPointFragment.kt]
+```kt
+
+class StudentPointFragment(val mainFragment: MainFragment) : Fragment() {
+
+    lateinit var fragmentStudentPointBinding: FragmentStudentPointBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentStudentPointBinding = FragmentStudentPointBinding.inflate(inflater)
+        mainActivity = activity as MainActivity
+
+        return fragmentStudentPointBinding.root
+    }
+
+}
+```
+
+### Fragment의 이름을 정의해준다.
+
+[fragment/MainFragment.kt - SubFragmentName]
+```kt
+    // 학생 성적 화면
+    STUDENT_POINT_FRAGMENT(6, "StudentPointFragment"),
+```
+
+### Fragment의 객체를 생성한다.
+
+[fragment/MainFragment.kt - replaceFragment()]
+```kt
+           // 학생 성적 화면
+            SubFragmentName.STUDENT_POINT_FRAGMENT -> StudentPointFragment(this)
+```
+
+### 네비게이션 뷰의 메뉴를 누르면 프래그먼트가 보이도록 한다.
+
+[fragment/MainFragment.kt - settingNavigationViewMain()]
+```kt
+                    R.id.navigation_main_menu_student_point -> {
+                        replaceFragment(SubFragmentName.STUDENT_POINT_FRAGMENT, false, false, null)
+                    }
+```
+
+### 화면을 구성한다.
+
+[res/layout/fragment_student_point.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="true"
+    tools:context=".fragment.StudentPointFragment" >
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarStudentPoint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutStudentPoint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="auto">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="국어점수" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="영어점수" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수학점수" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="총점" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="평균" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerStudentPoint"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>
+```
+
+### ViewPager를 통해 보여줄 Fragment를 생성한다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+class StudentPointSubFragment : Fragment() {
+
+    lateinit var fragmentStudentPointSubBinding: FragmentStudentPointSubBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentStudentPointSubBinding = FragmentStudentPointSubBinding.inflate(layoutInflater)
+        mainActivity = activity as MainActivity
+
+        return fragmentStudentPointSubBinding.root
+    }
+
+}
+```
+
+### 툴바를 구성하는 메서드를 구현한다.
+
+[fragment/StudentPointFragment.kt]
+```kt
+    // 툴바 구성 메서드
+    fun settingToolbar(){
+        fragmentStudentPointBinding.apply {
+            toolbarStudentPoint.title = "학생 점수 보기"
+            toolbarStudentPoint.setNavigationIcon(R.drawable.menu_24px)
+            toolbarStudentPoint.setNavigationOnClickListener {
+                mainFragment.fragmentMainBinding.drawerLayoutMain.open()
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentPointFragment.kt - onCreateView()]
+```kt
+        // 툴바 구성 메서드를 호출한다.
+        settingToolbar()
+```
+
+### ViewPager에 셋팅할 어뎁터 클래스를 만들어준다
+
+[fragment/StudentPointFragment.kt]
+```kt
+    // ViewPager2의 어뎁터
+    inner class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle){
+        // ViewPager2를 통해 보여줄 프래그먼트의 개수
+        override fun getItemCount(): Int {
+            return 5
+        }
+
+        // position번째에서 사용할 Fragment 객체를 생성해 반환하는 메서드
+        override fun createFragment(position: Int): Fragment {
+            val newFragment = when(position){
+                0 -> StudentPointSubFragment()
+                1 -> StudentPointSubFragment()
+                2 -> StudentPointSubFragment()
+                3 -> StudentPointSubFragment()
+                else -> StudentPointSubFragment()
+            }
+            return newFragment
+        }
+    }
+```
+
+### 탭을 구성하는 메서드를 작성해준다.
+
+
+[fragment/StudentPointFragment.kt]
+```kt
+    // 탭을 구성하는 메서드
+    fun settingTab(){
+        fragmentStudentPointBinding.apply {
+            // ViewPager2의 어뎁터를 설정한다. 
+            viewPagerStudentPoint.adapter = ViewPagerAdapter(mainActivity.supportFragmentManager, lifecycle)
+
+            // TabLayout과 ViewPager2가 상호 작용을 할 수 있도록 연동시켜준다.
+            val tabLayoutMediator = TabLayoutMediator(tabLayoutStudentPoint, viewPagerStudentPoint) { tab, position ->
+                // 각 탭에 보여줄 문자열을 새롭게 구성해줘야 한다.
+                when(position){
+                    0 -> tab.text = "국어점수"
+                    1 -> tab.text = "영어점수"
+                    2 -> tab.text = "수학점수"
+                    3 -> tab.text = "총점"
+                    4 -> tab.text = "평균"
+                }
+            }
+            tabLayoutMediator.attach()
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentPointFragment.kt - onCreateView()]
+```kt
+        // 탭을 구성하는 메서드를 호출한다.
+        settingTab()
+```
+
+### 프래그먼트를 통해 보고자 하는 정보의 이름을 정의한다.
+
+[fragment/StudentPointSubFragment.kt - StudentPointType]
+```kt
+// 프래그먼트를 통해 보고자 하는 정보 이름
+enum class StudentPointType(val number:Int, val str:String){
+    STUDENT_POINT_TYPE_KOREAN(1, "국어점수"),
+    STUDENT_POINT_TYPE_ENGLISH(2, "영어점수"),
+    STUDENT_POINT_TYPE_MATH(3, "수학점수"),
+    STUDENT_POINT_TYPE_TOTAL(4, "총점"),
+    STUDENT_POINT_TYPE_AVG(5, "평균")
+}
+```
+
+### 주 생성자를 통해 타입을 받는다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+class StudentPointSubFragment(val studentPointType: StudentPointType) : Fragment() {
+```
+
+### 프래그먼트 객체를 생성하는 곳을 수정한다.
+
+[fragment/StudentPointFragment.kt - ViewPagerAdapter]
+```kt
+                0 -> StudentPointSubFragment(StudentPointType.STUDENT_POINT_TYPE_KOREAN)
+                1 -> StudentPointSubFragment(StudentPointType.STUDENT_POINT_TYPE_ENGLISH)
+                2 -> StudentPointSubFragment(StudentPointType.STUDENT_POINT_TYPE_MATH)
+                3 -> StudentPointSubFragment(StudentPointType.STUDENT_POINT_TYPE_TOTAL)
+                else -> StudentPointSubFragment(StudentPointType.STUDENT_POINT_TYPE_AVG)
+```
+
+### ViewPager를 통해 보여줄 화면을 구성한다.
+
+[res/layout/fragment_student_point_sub.xml]
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.StudentPointSubFragment" >
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chipStudentPointOrdering"
+        style="@style/Widget.Material3.Chip.Assist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="오름차순 △" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewStudentPoint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
+```
+
+### ReyclcerView 구성을 위한 임시 데이터를 정의한다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+    // RecyclerView 구성을 위한 임시데이터
+    val tempData = Array(100){
+        "학생 ${it + 1}"
+    }
+```
+
+### RecyclerView의 어뎁터를 작성한다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+    // RecyclerView의 어뎁터
+    inner class RecyclerViewStudentPointSubAdapter : RecyclerView.Adapter<RecyclerViewStudentPointSubAdapter.ViewHolderStudentPointSub>(){
+        // ViewHolder
+        inner class ViewHolderStudentPointSub(val rowText1Binding: RowText1Binding) : RecyclerView.ViewHolder(rowText1Binding.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderStudentPointSub {
+            val rowText1Binding = RowText1Binding.inflate(layoutInflater, parent, false)
+            val viewHolderStudentPointSub = ViewHolderStudentPointSub(rowText1Binding)
+            return viewHolderStudentPointSub
+        }
+
+        override fun getItemCount(): Int {
+            return tempData.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolderStudentPointSub, position: Int) {
+            holder.rowText1Binding.textViewRow.text = tempData[position]
+        }
+    }
+```
+
+### RecyclerView를 구성하는 메서드를 작성해준다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+    // RecyclerView를 구성하는 메서드
+    fun settingRecyclerView(){
+        fragmentStudentPointSubBinding.apply {
+            recyclerViewStudentPoint.adapter = RecyclerViewStudentPointSubAdapter()
+            recyclerViewStudentPoint.layoutManager = LinearLayoutManager(mainActivity)
+            val deco = MaterialDividerItemDecoration(mainActivity, MaterialDividerItemDecoration.VERTICAL)
+            recyclerViewStudentPoint.addItemDecoration(deco)
+        }
+    }
+```
+
+### 메서드를 호출해준다.
+
+[fragment/StudentPointSubFragment.kt - onCreateView()]
+```kt
+        // RecyclerView를 구성하는 메서드를 호출한다.
+        settingRecyclerView()
+```
+
+### 정렬 기준값을 정의해준다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+// 정렬 기준 값
+enum class StudentPointSort(val number:Int, var str:String){
+    STUDENT_POINT_SORT_ASCENDING(1, "오름차순"),
+    STUDENT_POINT_SORT_DESCENDING(2, "내림차순")
+}
+```
+
+### 정렬 기준값을 담을 변수를 정의한다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+    // 정렬 기준값
+    var studentPointSort = StudentPointSort.STUDENT_POINT_SORT_ASCENDING
+```
+
+### Chip을 구성하는 메서드를 구현해준다.
+
+[fragment/StudentPointSubFragment.kt]
+```kt
+    // Chip을 구성하는 메서드
+    fun settingChip(){
+        fragmentStudentPointSubBinding.apply {
+            chipStudentPointOrdering.setOnClickListener{
+                when(studentPointSort){
+                    StudentPointSort.STUDENT_POINT_SORT_ASCENDING -> {
+                        chipStudentPointOrdering.text = "내림차순 ▽"
+                        studentPointSort = StudentPointSort.STUDENT_POINT_SORT_DESCENDING
+                    }
+                    StudentPointSort.STUDENT_POINT_SORT_DESCENDING -> {
+                        chipStudentPointOrdering.text = "오름차순 △"
+                        studentPointSort = StudentPointSort.STUDENT_POINT_SORT_ASCENDING
+                    }
+                }
+            }
+        }
+    }
+```
+
+### 메서드를 호출해준다.
+
+[fragment/StudentPointSubFragment.kt - onCreateView()]
+```kt
+        // Chip을 구성하는 메서드를 호출한다.
+        settingChip()
+```
+
+### StudentModel에 총점과 평균을 담을 프로퍼티를 정의한다.
+
+[viewmodel/StudentModel.kt]
+```kt
+    var studentTotal:Int = 0,
+    var studentAvg:Int = 0
+```
+
+### RecyclerView 구성을 위한 리스트를 정의한다.
+
+[viewmodel/StudentPointSubFragment.kt]
+```kt
+    // RecyclerView 구성을 위한 임시데이터
+//    val tempData = Array(100){
+//        "학생 ${it + 1}"
+//    }
+
+    // RecyclerView 구성을 위한 리스트
+    var studentList = mutableListOf<StudentModel>()
+```
+
+### 어뎁터를 수정한다.
+
+[viewmodel/StudentPointSubFragment.kt - RecyclerViewStudentPointSubAdapter]
+```kt
+
+        override fun getItemCount(): Int {
+            return studentList.size
+        }
+
+        override fun onBindViewHolder(holder: ViewHolderStudentPointSub, position: Int) {
+            holder.rowText1Binding.textViewRow.text = studentList[position].studentName
+        }
+```
+
+### 데이터를 가져와 정렬하고 RecyclerView를 갱신하는 메서드를 구현한다.
+[viewmodel/StudentPointSubFragment.kt]
+```kt
+
+    //  데이터를 가져오는 메서드
+    fun gettingStudentPointData(){
+        CoroutineScope(Dispatchers.Main).launch {
+            val work1 = async(Dispatchers.IO){
+                StudentRepository.selectStudentDataAll(mainActivity)
+            }
+            studentList = work1.await()
+            // 각 학생의 총점과 평균을 구해 담아준다.
+            studentList.forEach {
+                it.studentTotal = it.studentKorean + it.studentEnglish + it.studentMath
+                it.studentAvg = it.studentTotal / 3
+            }
+            // 보여주고자 하는 정보를 기준으로 분기한다.
+            when(studentPointType){
+                StudentPointType.STUDENT_POINT_TYPE_KOREAN -> {
+                    when(studentPointSort){
+                        StudentPointSort.STUDENT_POINT_SORT_ASCENDING -> {
+                            studentList.sortBy {
+                                it.studentKorean
+                            }
+                        }
+                        StudentPointSort.STUDENT_POINT_SORT_DESCENDING -> {
+                            studentList.sortByDescending {
+                                it.studentKorean
+                            }
+                        }
+                    }
+                }
+                StudentPointType.STUDENT_POINT_TYPE_ENGLISH -> {
+                    when(studentPointSort){
+                        StudentPointSort.STUDENT_POINT_SORT_ASCENDING -> {
+                            studentList.sortBy {
+                                it.studentEnglish
+                            }
+                        }
+                        StudentPointSort.STUDENT_POINT_SORT_DESCENDING -> {
+                            studentList.sortByDescending {
+                                it.studentEnglish
+                            }
+                        }
+                    }
+                }
+                StudentPointType.STUDENT_POINT_TYPE_MATH -> {
+                    when(studentPointSort){
+                        StudentPointSort.STUDENT_POINT_SORT_ASCENDING -> {
+                            studentList.sortBy {
+                                it.studentMath
+                            }
+                        }
+                        StudentPointSort.STUDENT_POINT_SORT_DESCENDING -> {
+                            studentList.sortByDescending {
+                                it.studentMath
+                            }
+                        }
+                    }
+                }
+                StudentPointType.STUDENT_POINT_TYPE_TOTAL -> {
+                    when(studentPointSort){
+                        StudentPointSort.STUDENT_POINT_SORT_ASCENDING -> {
+                            studentList.sortBy {
+                                it.studentTotal
+                            }
+                        }
+                        StudentPointSort.STUDENT_POINT_SORT_DESCENDING -> {
+                            studentList.sortByDescending {
+                                it.studentTotal
+                            }
+                        }
+                    }
+                }
+                StudentPointType.STUDENT_POINT_TYPE_AVG -> {
+                    when(studentPointSort){
+                        StudentPointSort.STUDENT_POINT_SORT_ASCENDING -> {
+                            studentList.sortBy {
+                                it.studentAvg
+                            }
+                        }
+                        StudentPointSort.STUDENT_POINT_SORT_DESCENDING -> {
+                            studentList.sortByDescending {
+                                it.studentAvg
+                            }
+                        }
+                    }
+                }
+            }
+
+            // RecyclerView 갱신
+            fragmentStudentPointSubBinding.recyclerViewStudentPoint.adapter?.notifyDataSetChanged()
+        }
+    }
+
+```
+
+### 어뎁터에 출력하는 부분을 수정한다.
+
+[viewmodel/StudentPointSubFragment.kt - RecyclerViewStudentPointSubAdapter]
+```kt
+        override fun onBindViewHolder(holder: ViewHolderStudentPointSub, position: Int) {
+            holder.rowText1Binding.textViewRow.text = studentList[position].studentName
+
+            // 보여주고자 하는 정보를 기준으로 분기한다.
+            when(studentPointType){
+                StudentPointType.STUDENT_POINT_TYPE_KOREAN -> {
+                    holder.rowText1Binding.textViewRow.append(" : ${studentList[position].studentKorean}")
+                }
+                StudentPointType.STUDENT_POINT_TYPE_ENGLISH -> {
+                    holder.rowText1Binding.textViewRow.append(" : ${studentList[position].studentEnglish}")
+                }
+                StudentPointType.STUDENT_POINT_TYPE_MATH -> {
+                    holder.rowText1Binding.textViewRow.append(" : ${studentList[position].studentMath}")
+                }
+                StudentPointType.STUDENT_POINT_TYPE_TOTAL -> {
+                    holder.rowText1Binding.textViewRow.append(" : ${studentList[position].studentTotal}")
+                }
+                StudentPointType.STUDENT_POINT_TYPE_AVG -> {
+                    holder.rowText1Binding.textViewRow.append(" : ${studentList[position].studentAvg}")
+                }
+            }
+        }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentPointSubFragment.kt - onCreateView()]
+```kt
+        //  데이터를 가져오는 메서드
+        gettingStudentPointData()
+```
+
+[fragment/StudentPointSubFragment.kt - settingChip()]
+```kt
+                //  데이터를 가져오는 메서드
+                gettingStudentPointData()
+```
+
+---
+
+# 학생 통계 구현
+
+### Fragment를 생성한다.
+
+[fragment/StudentInfoFragment.kt]
+
+```kt
+class StudentInfoFragment(val mainFragment: MainFragment) : Fragment() {
+
+    lateinit var fragmentStudentInfoBinding: FragmentStudentInfoBinding
+    lateinit var mainActivity: MainActivity
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentStudentInfoBinding = FragmentStudentInfoBinding.inflate(layoutInflater)
+        mainActivity = activity as MainActivity
+
+        return fragmentStudentInfoBinding.root
+    }
+}
+```
+
+### Fragment의 이름을 정의한다.
+
+[fragment/MainFragment.kt - SubFragmentName]
+```kt
+    // 학생 통계 화면
+    STUDENT_INFO_FRAGMENT(7, "StudentInfoFragment"),
+```
+
+### Fragment의 객체를 생성한다.
+
+[fragment/MainFragment.kt - replaceFragment()]
+```kt
+            // 학생 통계 화면
+            SubFragmentName.STUDENT_INFO_FRAGMENT -> StudentInfoFragment(this)
+```
+
+### NavigationView의 메뉴를 누르면 프래그먼트가 보이게 한다.
+
+[fragment/MainFragment.kt - settingNavigationViewMain()]
+```kt
+                    R.id.navigation_main_menu_student_data -> {
+                        replaceFragment(SubFragmentName.STUDENT_INFO_FRAGMENT, false, false, null)
+                    }
+```
+
+### 화면을 구성해준다.
+
+[res/layout/fragment_student_info.xml]
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionGroup="false"
+    tools:context=".fragment.StudentInfoFragment" >
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarStudentInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp" >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTotalCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="전체 학생의 수"
+                app:startIconDrawable="@drawable/person_24px">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoGradeOneCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="1학년의 수"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoGradeTwoCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="2학년의 수"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoGradeThreeCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="3학년의 수"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeBaseBallCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="야구부의 수"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeSoccerCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="축구부의 수"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeBasketBallCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="농구부의 수"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeKoreanTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="국어 총점"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeEnglishTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="영어 총점"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeMathTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="수학 총점"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeEnglishAvg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="영어 평균"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeMathAvg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="수학 평균"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeTotalAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="전체 총점"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textFieldStudentInfoTypeAvgAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="전체 평균"
+                app:startIconDrawable="@drawable/person_24px"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:singleLine="true"
+                    android:text=" "
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
+```
+
+### 툴바를 구성하는 메서드를 구현해준다.
+
+[fragment/StudentInfoFragment.kt]
+```kt
+    // 툴바를 구성하는 메서드
+    fun settingToolbar(){
+        fragmentStudentInfoBinding.apply {
+            toolbarStudentInfo.title = "학생 통계"
+            toolbarStudentInfo.setNavigationIcon(R.drawable.menu_24px)
+            toolbarStudentInfo.setNavigationOnClickListener {
+                mainFragment.fragmentMainBinding.drawerLayoutMain.open()
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentInfoFragment.kt - onCreateView()]
+```kt
+        // 툴바를 구성하는 메서드를 호출한다.
+        settingToolbar()
+```
+
+### TextField를 구성하는 메서드를 구현한다.
+
+[fragment/StudentInfoFragment.kt]
+```kt
+    // 입력 요소를 설정하는 메서드
+    fun settingTextField(){
+        fragmentStudentInfoBinding.apply {
+            CoroutineScope(Dispatchers.Main).launch {
+                val work1 = async(Dispatchers.IO){
+                    StudentRepository.selectStudentDataAll(mainActivity)
+                }
+                val studentList = work1.await()
+
+                // 각 정보를 담을 변수들
+                var gradeOneCount = 0
+                var gradeTwoCount = 0
+                var gradeThreeCount = 0
+                var baseBallCount = 0
+                var soccerCount = 0
+                var basketBallCount = 0
+                var koreanTotal = 0
+                var englishTotal = 0
+                var mathTotal = 0
+
+                studentList.forEach {
+                    when(it.studentGrade){
+                        StudentGrade.STUDENT_GRADE_1 -> gradeOneCount++
+                        StudentGrade.STUDENT_GRADE_2 -> gradeTwoCount++
+                        StudentGrade.STUDENT_GRADE_3 -> gradeThreeCount++
+                    }
+
+                    when(it.studentType){
+                        StudentType.STUDENT_TYPE_BASEBALL -> basketBallCount++
+                        StudentType.STUDENT_TYPE_SOCCER -> soccerCount++
+                        StudentType.STUDENT_TYPE_BASKETBALL -> baseBallCount++
+                    }
+
+                    koreanTotal += it.studentKorean
+                    englishTotal += it.studentEnglish
+                    mathTotal += it.studentMath
+                }
+                val totalCount = gradeOneCount + gradeTwoCount + gradeThreeCount
+                var koreanAvg = koreanTotal / studentList.size
+                var englishAvg = englishTotal / studentList.size
+                var mathAvg = mathTotal / studentList.size
+
+                var pointTotal = koreanTotal + englishTotal + mathTotal
+                var pointAvg = pointTotal / (studentList.size * 3)
+
+                textFieldStudentInfoTotalCount.editText?.setText("$totalCount 명")
+                textFieldStudentInfoGradeOneCount.editText?.setText("$gradeOneCount 명")
+                textFieldStudentInfoGradeTwoCount.editText?.setText("$gradeTwoCount 명")
+                textFieldStudentInfoGradeThreeCount.editText?.setText("$gradeThreeCount 명")
+                textFieldStudentInfoTypeBaseBallCount.editText?.setText("$baseBallCount 명")
+                textFieldStudentInfoTypeSoccerCount.editText?.setText("$soccerCount 명")
+                textFieldStudentInfoTypeBasketBallCount.editText?.setText("$basketBallCount 명")
+                textFieldStudentInfoTypeKoreanTotal.editText?.setText("$koreanTotal 점")
+                textFieldStudentInfoTypeEnglishTotal.editText?.setText("$englishTotal 점")
+                textFieldStudentInfoTypeMathTotal.editText?.setText("$mathTotal 점")
+                textFieldStudentInfoTypeKoreanAvg.editText?.setText("$koreanAvg 점")
+                textFieldStudentInfoTypeEnglishAvg.editText?.setText("$englishAvg 점")
+                textFieldStudentInfoTypeMathAvg.editText?.setText("$mathAvg 점")
+                textFieldStudentInfoTypeTotalAll.editText?.setText("$pointTotal 점")
+                textFieldStudentInfoTypeAvgAll.editText?.setText("$pointAvg 점")
+            }
+        }
+    }
+```
+
+### 메서드를 호출한다.
+
+[fragment/StudentInfoFragment.kt - onCreateView()]
+```kt
+        // 입력 요소를 설정하는 메서드
+        settingTextField()
+```

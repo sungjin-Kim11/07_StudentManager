@@ -12,5 +12,7 @@ class StudentModel(
     val studentGender: StudentGender,
     val studentKorean:Int,
     val studentEnglish:Int,
-    val studentMath:Int
+    val studentMath:Int,
+    var studentTotal:Int = 0,
+    var studentAvg:Int = 0
 )
